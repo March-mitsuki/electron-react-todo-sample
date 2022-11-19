@@ -1,0 +1,11 @@
+{
+  "name": "@doit/electron_app",
+  "version": "1.0.0",
+  "description": "doit app frontend",
+  "main": "src/index.ts",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^21.3.0"
+  }
+}
