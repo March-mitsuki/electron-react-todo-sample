@@ -12,6 +12,7 @@
       "@doit/*": ["./packages/*"]
     }
   },
+  "typeRoots": ["node_modules/@types", "packages/shared/interfaces/global.d.ts"],
   "include": ["./packages/**/*"],
   "exclude": ["**/node_modules/**"]
 }
