@@ -1,10 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": false,
     "module": "CommonJS",
     "baseUrl": "./",
     "paths": {
       "@doit/electron/*": ["./src/*"]
     }
-  }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "exclude": ["../solid_frontend"]
 }
