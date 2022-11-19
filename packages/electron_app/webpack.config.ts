@@ -3,7 +3,9 @@ import { Configuration } from "webpack";
 
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import path from "path";
+
 // 共通設定
 const common: Configuration = {
   // モジュール解決に参照するファイル拡張子
@@ -39,7 +41,7 @@ const common: Configuration = {
         test: /\.css$/,
         // use 配列に指定したローダーは *最後尾から* 順に適用される
         // セキュリティ対策のため style-loader は使用しない
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
       {
         // 画像やフォントなどのアセット類
@@ -51,6 +53,9 @@ const common: Configuration = {
         type: "asset/resource",
       },
     ],
+  },
+  optimization: {
+    minimizer: [new CssMinimizerPlugin()],
   },
 };
 

@@ -6,7 +6,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-app-region: drag;
 }
+.electron-no-drag {
+  -webkit-app-region: no-drag;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

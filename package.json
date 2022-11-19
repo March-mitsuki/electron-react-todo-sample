@@ -11,9 +11,13 @@
   ],
   "scripts": {
     "run:front": "yarn workspace @doit/solid_frontend",
-    "run:electron": "yarn workspace @doit/electron_app"
+    "run:electron": "yarn workspace @doit/electron_app",
+    "run:shared": "yarn workspace @doit/shared",
+    "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
+    "dev:electron:app": "yarn workspace @doit/electron_app dev:app"
   },
   "devDependencies": {
+    "@types/luxon": "^3.1.0",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
@@ -22,5 +26,8 @@
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "luxon": "^3.1.0"
   }
 }
