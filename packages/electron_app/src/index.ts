@@ -1,15 +1,15 @@
 import path from "path";
 import { BrowserWindow, app, ipcMain } from "electron";
 import { DateTime } from "luxon";
-import got from "got";
+// import got from "got";
 
 // type
-import { ToDoit } from "../../shared";
+import { ToDoit } from "@doit/shared";
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
-    // width: 300,
-    // height: 200,
+    width: 300,
+    height: 600,
     frame: false,
     // opacity: 0.8,
     // alwaysOnTop: true,
@@ -32,12 +32,14 @@ app
           try {
             const todoList = [
               new ToDoit.Todo({
+                id: 1,
                 content: "项目1",
                 create_date: DateTime.now(),
                 finish_date: DateTime.now(),
               }),
               new ToDoit.Todo({
-                content: "项目2",
+                id: 2,
+                content: "ミッション2",
                 create_date: DateTime.now(),
                 finish_date: DateTime.now(),
               }),

@@ -1,55 +1,48 @@
 import { DateTime } from "luxon";
 
 // type
-import { ToDoit } from "../../../../shared";
-// import { todoType } from "@doit/sha";
+import { AppAction, AppReducer, AppState } from "./types";
+import { ToDoit } from "@doit/shared";
 
-export const appReducer: AppReducer<AppState, AppActionType> = (state, action) => {
-  switch (action.type) {
+export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
+  const { type, paylod } = action;
+  switch (type) {
     case "addTodo":
-      state.todo.push(action.paylod);
-      return { todo: state.todo };
+      state.todo.push(paylod);
+      return { ...state, todo: state.todo };
     case "deleteTodo":
       state.todo.pop();
-      return { todo: state.todo };
+      return { ...state, todo: state.todo };
     case "setTodo":
-      return { todo: action.paylod };
+      return { ...state, todo: paylod };
+    case "toggleFinish": {
+      const idx = state.todo.findIndex((x) => x.id === paylod.id);
+      state.todo[idx].is_finish = !paylod.nowFinish;
+      return { ...state, todo: state.todo };
+    }
+    case "changePageType":
+      return { ...state, pageType: paylod };
+    case "changeTaskAdding":
+      return { ...state, isTaskAdding: paylod };
     default:
       throw new Error(`undefined action`);
   }
 };
 
-export const initialState = {
+export const initialState: AppState = {
   todo: [
     new ToDoit.Todo({
+      id: -1,
       content: "尚未连接服务器",
       create_date: DateTime.now(),
       finish_date: DateTime.now(),
     }),
   ],
+  pageType: "ongoing",
+  // isTaskAdding: false,
+  isTaskAdding: true,
 };
 
 export const initReducer = (): AppState => {
-  return {
-    todo: [
-      new ToDoit.Todo({
-        content: "已重置",
-        create_date: DateTime.now(),
-        finish_date: DateTime.now(),
-      }),
-    ],
-  };
+  return initialState;
 };
-
-export type AppState = typeof initialState;
-
-type AppAction<T, P> = {
-  type: T;
-  paylod: P;
-};
-type AppActionType =
-  | AppAction<"addTodo", ToDoit.Todo>
-  | AppAction<"deleteTodo", number>
-  | AppAction<"setTodo", ToDoit.Todo[]>;
-
-type AppReducer<T, A> = (state: T, actioin: A) => AppState;
