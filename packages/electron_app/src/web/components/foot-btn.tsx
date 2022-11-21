@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useAppCtx } from "../store/store";
 
-const FootBtn = () => {
+const FootBtn: React.FC = () => {
   const { dispatch } = useAppCtx();
   const eleAPI = window.electronAPI;
 

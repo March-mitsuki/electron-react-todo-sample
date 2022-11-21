@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppCtx } from "../store/store";
 
-const CtxMenu = () => {
+const CtxMenu: React.FC = () => {
   const { state, dispatch } = useAppCtx();
 
   const ctxMenuWrapperRef = useRef<HTMLDivElement>(null);

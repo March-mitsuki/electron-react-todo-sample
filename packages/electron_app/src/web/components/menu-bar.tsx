@@ -1,6 +1,6 @@
 import { useAppCtx } from "../store/store";
 
-const MenuBar = () => {
+const MenuBar: React.FC = () => {
   const { state, dispatch } = useAppCtx();
 
   return (
