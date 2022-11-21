@@ -7,6 +7,7 @@ export type TodoMenyType = { id: number; x: number; y: number };
 
 export type AppState = {
   todo: ToDoit.Todo[];
+  isInit: boolean;
   todoMenu: TodoMenyType;
   pageType: PageType;
   isTaskAdding: boolean;

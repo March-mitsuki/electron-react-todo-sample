@@ -9,7 +9,7 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   switch (type) {
     case "addTodo":
       state.todo.push(paylod);
-      return { ...state, todo: state.todo };
+      return { ...state, todo: state.todo, isInit: true };
     case "deleteTodo": {
       const idx = state.todo.findIndex((x) => x.id === paylod);
       state.todo.splice(idx, 1);
@@ -42,6 +42,7 @@ export const initialState: AppState = {
       finish_date: DateTime.now(),
     }),
   ],
+  isInit: false,
   todoMenu: { id: -1, x: 0, y: 0 },
   pageType: "ongoing",
   // isTaskAdding: false,
