@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
@@ -9,13 +9,19 @@ const Home: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const eleAPI = window.electronAPI;
 
-  useEffect(() => {
+  useMemo(() => {
+    if (state.isInit) {
+      return;
+    }
     eleAPI.send
       .getAllTodo()
       .then((data) => {
         dispatch({ type: "setTodo", paylod: data });
       })
       .catch((err) => console.log("get all todo err", err));
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
@@ -58,7 +64,7 @@ const Home: React.FC = () => {
         <div className="flex justify-between px-5 py-3">
           <FootBtn></FootBtn>
         </div>
-        {state.isTaskAdding && <AddTask></AddTask>}
+        {(state.taskFormType === "add" || state.taskFormType === "edit") && <AddTask></AddTask>}
       </div>
     </div>
   );
