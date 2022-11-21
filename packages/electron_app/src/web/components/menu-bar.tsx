@@ -1,4 +1,5 @@
 import { useAppCtx } from "../store/store";
+import { PageType } from "../store/types";
 
 const MenuBar: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -7,9 +8,9 @@ const MenuBar: React.FC = () => {
     <>
       <div className="grid grid-cols-3 gap-2 px-5 pt-2 select-none">
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: "ongoing" })}
+          onClick={() => dispatch({ type: "changePageType", paylod: PageType.ongoing })}
           className={
-            state.pageType === "ongoing"
+            state.pageType === PageType.ongoing
               ? "text-NRgray bg-NRblack cursor-pointer"
               : "text-NRblack bg-NRgray mb-2 cursor-pointer"
           }
@@ -17,7 +18,7 @@ const MenuBar: React.FC = () => {
           <div className="flex items-center justify-center gap-1">
             <div
               className={
-                state.pageType === "ongoing"
+                state.pageType === PageType.ongoing
                   ? "h-[10px] w-[10px] bg-NRgray"
                   : "h-[10px] w-[10px] bg-NRblack"
               }
@@ -26,9 +27,9 @@ const MenuBar: React.FC = () => {
           </div>
         </div>
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: "finish" })}
+          onClick={() => dispatch({ type: "changePageType", paylod: PageType.finish })}
           className={
-            state.pageType === "finish"
+            state.pageType === PageType.finish
               ? "text-NRgray bg-NRblack cursor-pointer"
               : "text-NRblack bg-NRgray mb-2 cursor-pointer"
           }
@@ -36,7 +37,7 @@ const MenuBar: React.FC = () => {
           <div className="flex items-center justify-center gap-1">
             <div
               className={
-                state.pageType === "finish"
+                state.pageType === PageType.finish
                   ? "h-[10px] w-[10px] bg-NRgray"
                   : "h-[10px] w-[10px] bg-NRblack"
               }
@@ -45,9 +46,9 @@ const MenuBar: React.FC = () => {
           </div>
         </div>
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: "all" })}
+          onClick={() => dispatch({ type: "changePageType", paylod: PageType.all })}
           className={
-            state.pageType === "all"
+            state.pageType === PageType.all
               ? "text-NRgray bg-NRblack cursor-pointer"
               : "text-NRblack bg-NRgray mb-2 cursor-pointer"
           }
@@ -55,7 +56,7 @@ const MenuBar: React.FC = () => {
           <div className="flex items-center justify-center gap-1">
             <div
               className={
-                state.pageType === "all"
+                state.pageType === PageType.all
                   ? "h-[10px] w-[10px] bg-NRgray"
                   : "h-[10px] w-[10px] bg-NRblack"
               }

@@ -1,7 +1,11 @@
 import { ToDoit } from "@doit/shared";
 import { Dispatch } from "react";
 
-export type PageType = "finish" | "ongoing" | "all";
+export enum PageType {
+  ongoing = 1,
+  finish = 2,
+  all = 3,
+}
 
 export type TodoMenyType = { id: number; x: number; y: number };
 

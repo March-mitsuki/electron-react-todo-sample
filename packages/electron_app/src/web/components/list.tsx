@@ -7,6 +7,7 @@ import { useAppCtx } from "../store/store";
 // type
 import type { Todo } from "@doit/shared/interfaces/todo_type";
 import { DateTime } from "luxon";
+import { PageType } from "../store/types";
 
 const TodoList: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -79,11 +80,11 @@ const TodoList: React.FC = () => {
     <>
       {state.todo.map((elem, idx) => {
         console.log("map render once");
-        if (state.pageType === "ongoing") {
+        if (state.pageType === PageType.ongoing) {
           if (!elem.is_finish) {
             return listNode(elem, idx);
           }
-        } else if (state.pageType === "finish") {
+        } else if (state.pageType === PageType.finish) {
           if (elem.is_finish) {
             return listNode(elem, idx);
           }

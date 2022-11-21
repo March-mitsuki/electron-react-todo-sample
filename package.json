@@ -14,7 +14,8 @@
     "run:electron": "yarn workspace @doit/electron_app",
     "run:shared": "yarn workspace @doit/shared",
     "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
-    "dev:electron:app": "yarn workspace @doit/electron_app dev:app"
+    "dev:electron:app": "yarn workspace @doit/electron_app dev:app",
+    "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
   },
   "devDependencies": {
     "@types/luxon": "^3.1.0",

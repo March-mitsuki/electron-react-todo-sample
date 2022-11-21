@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 // type
-import { AppAction, AppReducer, AppState } from "./types";
+import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
@@ -44,7 +44,7 @@ export const initialState: AppState = {
   ],
   isInit: false,
   todoMenu: { id: -1, x: 0, y: 0 },
-  pageType: "ongoing",
+  pageType: PageType.ongoing,
   // isTaskAdding: false,
   isTaskAdding: true,
 };
