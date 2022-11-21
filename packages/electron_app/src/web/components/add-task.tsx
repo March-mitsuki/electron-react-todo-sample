@@ -5,15 +5,31 @@ import { useAppCtx } from "../store/store";
 
 import { useRef, useState } from "react";
 
-const AddTask: React.FC = () => {
-  const { dispatch } = useAppCtx();
-  const [newTaskIptData, setNewTaskIptData] = useState({
-    task: "",
-    date: "",
+type TodoInputData = {
+  todo: string;
+  date: string;
+};
+
+const AddTodo: React.FC = () => {
+  const { state, dispatch } = useAppCtx();
+  const [newTodoIptData, setNewTodoIptData] = useState<TodoInputData>(() => {
+    if (state.changeTodoForm.formType === "edit") {
+      const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
+      const currentTodo = state.todo[idx];
+      return {
+        todo: currentTodo.content,
+        date: `${currentTodo.finish_date_obj.year}${currentTodo.finish_date_obj.month}${currentTodo.finish_date_obj.day}`,
+      };
+    } else {
+      return {
+        todo: "",
+        date: "",
+      };
+    }
   });
 
-  const submitNewTask = () => {
-    const date = newTaskIptData.date;
+  const submitNewTodo = () => {
+    const date = newTodoIptData.date;
     const year = Number(date.slice(0, 2));
     const month = Number(date.slice(2, 4));
     const day = Number(date.slice(4, 6));
@@ -44,11 +60,11 @@ const AddTask: React.FC = () => {
       id: Date.now(),
       create_date: DateTime.now(),
       finish_date: finish_date,
-      content: newTaskIptData.task,
+      content: newTodoIptData.todo,
     });
     dispatch({ type: "addTodo", paylod: newTask });
-    setNewTaskIptData({
-      task: "",
+    setNewTodoIptData({
+      todo: "",
       date: "",
     });
     return;
@@ -97,9 +113,9 @@ const AddTask: React.FC = () => {
         <input
           type="text"
           placeholder="e.g.征服世界"
-          value={newTaskIptData.task}
+          value={newTodoIptData.todo}
           onChange={(e) =>
-            setNewTaskIptData((pre) => {
+            setNewTodoIptData((pre) => {
               return { ...pre, task: e.target.value };
             })
           }
@@ -116,9 +132,9 @@ const AddTask: React.FC = () => {
         <input
           type="text"
           placeholder={`e.g.${DateTime.now().toFormat("yyLLdd")}`}
-          value={newTaskIptData.date}
+          value={newTodoIptData.date}
           onChange={(e) => {
-            setNewTaskIptData((pre) => {
+            setNewTodoIptData((pre) => {
               return { ...pre, date: e.target.value };
             });
           }}
@@ -141,7 +157,7 @@ const AddTask: React.FC = () => {
           className=" absolute h-full w-screen"
         ></canvas>
         <button
-          onClick={submitNewTask}
+          onClick={submitNewTodo}
           className={
             " ml-8 mt-2 mr-6 pl-2 text-NRblack bg-NRgray select-none cursor-pointer text-start " +
             " hover:mr-0 hover:bg-NRblack hover:text-NRyellow " +
@@ -150,10 +166,13 @@ const AddTask: React.FC = () => {
           onMouseEnter={() => drawPointerAtCenter(90, 60, pointerCanvasRef.current)}
           onMouseLeave={() => clearCanvas(pointerCanvasRef.current)}
         >
-          再努努力
+          {state.changeTodoForm.formType === "add" && "再努努力"}
+          {state.changeTodoForm.formType === "edit" && "修改任务"}
         </button>
         <button
-          onClick={() => dispatch({ type: "changeTaskAdding", paylod: false })}
+          onClick={() =>
+            dispatch({ type: "changeTodoForm", paylod: { formType: "close", id: null } })
+          }
           className={
             " ml-8 mb-2 mr-6 pl-2 text-NRblack bg-NRgray select-none cursor-pointer text-start " +
             " hover:mr-0 hover:bg-NRblack hover:text-NRyellow" +
@@ -162,11 +181,12 @@ const AddTask: React.FC = () => {
           onMouseEnter={() => drawPointerAtCenter(90, 155, pointerCanvasRef.current)}
           onMouseLeave={() => clearCanvas(pointerCanvasRef.current)}
         >
-          还是算了
+          {state.changeTodoForm.formType === "add" && "还是算了"}
+          {state.changeTodoForm.formType === "edit" && "就按原来的"}
         </button>
       </div>
     </>
   );
 };
 
-export default AddTask;
+export default AddTodo;

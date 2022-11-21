@@ -7,14 +7,19 @@ export enum PageType {
   all = 3,
 }
 
-export type TodoMenyType = { id: number; x: number; y: number };
+export type TodoMeneType = { id: number; x: number; y: number };
+
+// close 和 add 用不到 id 所以 null 就行
+export type todoFormTypes =
+  | { formType: "close" | "add"; id: null }
+  | { formType: "edit"; id: number };
 
 export type AppState = {
   todo: ToDoit.Todo[];
   isInit: boolean;
-  todoMenu: TodoMenyType;
+  todoMenu: TodoMeneType;
   pageType: PageType;
-  isTaskAdding: boolean;
+  changeTodoForm: todoFormTypes;
 };
 
 export type AppActionType<T, P> = {
@@ -28,8 +33,8 @@ export type AppAction =
   | AppActionType<"setTodo", ToDoit.Todo[]>
   | AppActionType<"toggleFinish", { id: number; nowFinish: boolean }>
   | AppActionType<"changePageType", PageType>
-  | AppActionType<"changeTaskAdding", boolean>
-  | AppActionType<"setTodoMenu", TodoMenyType>;
+  | AppActionType<"changeTodoForm", todoFormTypes>
+  | AppActionType<"setTodoMenu", TodoMeneType>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;
 

@@ -30,7 +30,11 @@ const FootBtn: React.FC = () => {
             <div className=" absolute left-2 h-[32px] w-[2px] bg-NRblack"></div>
           </>
         )}
-        <button onClick={() => dispatch({ type: "changeTaskAdding", paylod: true })}>
+        <button
+          onClick={() =>
+            dispatch({ type: "changeTodoForm", paylod: { formType: "add", id: null } })
+          }
+        >
           再坚持一会
         </button>
       </label>

@@ -64,7 +64,8 @@ const Home: React.FC = () => {
         <div className="flex justify-between px-5 py-3">
           <FootBtn></FootBtn>
         </div>
-        {state.isTaskAdding && <AddTask></AddTask>}
+        {state.changeTodoForm.formType === "add" && <AddTask></AddTask>}
+        {state.changeTodoForm.formType === "edit" && <AddTask></AddTask>}
       </div>
     </div>
   );

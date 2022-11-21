@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { useAppCtx } from "../store/store";
 
 const CtxMenu: React.FC = () => {
@@ -26,12 +25,17 @@ const CtxMenu: React.FC = () => {
           >
             删除
           </button>
-          <Link
-            to={`edit/${state.todoMenu.id}`}
+          <button
+            onClick={() =>
+              dispatch({
+                type: "changeTodoForm",
+                paylod: { formType: "edit", id: state.todoMenu.id },
+              })
+            }
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "
           >
             修改
-          </Link>
+          </button>
         </div>
       </div>
     </div>
