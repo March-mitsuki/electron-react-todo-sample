@@ -10,9 +10,11 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     case "addTodo":
       state.todo.push(paylod);
       return { ...state, todo: state.todo };
-    case "deleteTodo":
-      state.todo.pop();
+    case "deleteTodo": {
+      const idx = state.todo.findIndex((x) => x.id === paylod);
+      state.todo.splice(idx, 1);
       return { ...state, todo: state.todo };
+    }
     case "setTodo":
       return { ...state, todo: paylod };
     case "toggleFinish": {

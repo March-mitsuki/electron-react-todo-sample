@@ -6,14 +6,51 @@ import { useAppCtx } from "../store/store";
 import { useRef, useState } from "react";
 
 const AddTask: React.FC = () => {
-  const { state, dispatch } = useAppCtx();
+  const { dispatch } = useAppCtx();
   const [newTaskIptData, setNewTaskIptData] = useState({
     task: "",
     date: "",
   });
 
   const submitNewTask = () => {
-    console.log("再努努力:", newTaskIptData);
+    const date = newTaskIptData.date;
+    const year = Number(date.slice(0, 2));
+    const month = Number(date.slice(2, 4));
+    const day = Number(date.slice(4, 6));
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      alert("请按照yyLLdd的格式输入日期");
+      return;
+    }
+    if (year === 0 || month > 12 || day > 31) {
+      alert("请检查是否有不合适的日期,e.g.2月30日");
+      return;
+    }
+    if (year % 100 !== 0 && year % 4 === 0 && month === 2 && day > 29) {
+      alert("请检查是否有不合适的日期,e.g.2月30日");
+      return;
+    } else if (year % 100 === 0 && year % 400 === 0 && month === 2 && day > 29) {
+      alert("请检查是否有不合适的日期,e.g.2月30日");
+      return;
+    } else if (month === 2 && day > 28) {
+      alert(`${year}年没有2月29日`);
+      return;
+    }
+    const finish_date = DateTime.fromFormat(date, "yyLLdd");
+    if (finish_date < DateTime.now()) {
+      alert("你难道要穿越到过去完成这个任务吗? 请检查你的时间");
+      return;
+    }
+    const newTask = new ToDoit.Todo({
+      id: Date.now(),
+      create_date: DateTime.now(),
+      finish_date: finish_date,
+      content: newTaskIptData.task,
+    });
+    dispatch({ type: "addTodo", paylod: newTask });
+    setNewTaskIptData({
+      task: "",
+      date: "",
+    });
     return;
   };
 

@@ -1,13 +1,13 @@
-import "./index.css";
+import "../index.css";
 
 import { useReducer } from "react";
 
 // local dependencies
-import { appReducer, initialState, initReducer } from "./store/reducer";
-import { appCtx } from "./store/store";
-import Wrapper from "./components/wrapper";
+import { appReducer, initialState, initReducer } from "../store/reducer";
+import { appCtx } from "../store/store";
+import Wrapper from "../components/wrapper";
 
-const App = () => {
+const Home = () => {
   const [appState, appDispatch] = useReducer(appReducer, initialState, initReducer);
   const ctxProviderState = { state: appState, dispatch: appDispatch };
 
@@ -18,4 +18,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Home;

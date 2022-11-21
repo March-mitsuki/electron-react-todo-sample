@@ -6,6 +6,7 @@ import { useAppCtx } from "../store/store";
 
 // type
 import type { Todo } from "@doit/shared/interfaces/todo_type";
+import { DateTime } from "luxon";
 
 const TodoList: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -56,12 +57,20 @@ const TodoList: React.FC = () => {
               icon={faCheck}
               className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
             />
-            <div className="text-NRblack">{elem.content}</div>
+            <div className="text-NRblack truncate w-[calc(100vw/2)] ">{elem.content}</div>
           </div>
         )}
         <div
-          className={state.todoMenu.id === elem.id ? "text-NRorange" : "text-NRblack"}
-        >{`${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}</div>
+          className={
+            state.todoMenu.id === elem.id
+              ? "text-NRorange w-[90px] truncate"
+              : "text-NRblack w-[90px] truncate"
+          }
+        >
+          {elem.finish_date_obj.year > DateTime.now().year
+            ? `${elem.finish_date_obj.year}-${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`
+            : `${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}
+        </div>
       </label>
     );
   };

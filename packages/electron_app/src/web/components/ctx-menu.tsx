@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import { useAppCtx } from "../store/store";
 
 const CtxMenu = () => {
@@ -20,17 +21,17 @@ const CtxMenu = () => {
         <div className=" absolute bg-NRyellow/80 h-full w-[2px] left-3 "></div>
         <div className=" ml-5 my-1 flex flex-col ">
           <button
-            onClick={() => console.log("删除")}
+            onClick={() => dispatch({ type: "deleteTodo", paylod: state.todoMenu.id })}
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "
           >
             删除
           </button>
-          <button
-            onClick={() => console.log("修改")}
+          <Link
+            to={`edit/${state.todoMenu.id}`}
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "
           >
             修改
-          </button>
+          </Link>
         </div>
       </div>
     </div>
