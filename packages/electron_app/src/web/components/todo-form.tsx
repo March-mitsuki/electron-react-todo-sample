@@ -10,7 +10,7 @@ type TodoInputData = {
   date: string;
 };
 
-const AddTodo: React.FC = () => {
+const TodoForm: React.FC = () => {
   const { state, dispatch } = useAppCtx();
   const [newTodoIptData, setNewTodoIptData] = useState<TodoInputData>(() => {
     if (state.changeTodoForm.formType === "edit") {
@@ -189,4 +189,4 @@ const AddTodo: React.FC = () => {
   );
 };
 
-export default AddTodo;
+export default TodoForm;

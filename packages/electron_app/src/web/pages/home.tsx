@@ -2,7 +2,7 @@ import { useRef, useEffect, useMemo } from "react";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { CtxMenu, AddTask, MenuBar, FootBtn, TodoList } from "../components";
+import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList } from "../components";
 
 const Home: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -64,8 +64,8 @@ const Home: React.FC = () => {
         <div className="flex justify-between px-5 py-3">
           <FootBtn></FootBtn>
         </div>
-        {state.changeTodoForm.formType === "add" && <AddTask></AddTask>}
-        {state.changeTodoForm.formType === "edit" && <AddTask></AddTask>}
+        {state.changeTodoForm.formType === "add" && <TodoForm></TodoForm>}
+        {state.changeTodoForm.formType === "edit" && <TodoForm></TodoForm>}
       </div>
     </div>
   );
