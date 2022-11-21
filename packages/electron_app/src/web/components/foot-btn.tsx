@@ -15,8 +15,8 @@ const FootBtn = () => {
         onMouseLeave={() => setCreateBtnHover(false)}
         className={
           createBtnHover
-            ? "relative flex items-center gap-1 pr-2 pl-5 py-1 text-NRyellow bg-NRblack"
-            : "relative flex items-center gap-1 pr-2 pl-5 py-1 text-NRblack bg-NRgray"
+            ? "relative select-none cursor-pointer flex items-center gap-1 pr-2 pl-5 py-1 text-NRyellow bg-NRblack"
+            : "relative select-none cursor-pointer flex items-center gap-1 pr-2 pl-5 py-1 text-NRblack bg-NRgray"
         }
       >
         {createBtnHover ? (
@@ -39,8 +39,8 @@ const FootBtn = () => {
         onMouseLeave={() => setCloseBtnHover(false)}
         className={
           closeBtnHover
-            ? "relative flex items-center gap-1 pr-2 pl-5 py-1 text-NRyellow bg-NRblack"
-            : "relative flex items-center gap-1 pr-2 pl-5 py-1 text-NRblack bg-NRgray"
+            ? "relative select-none cursor-pointer flex items-center gap-1 pr-2 pl-5 py-1 text-NRyellow bg-NRblack"
+            : "relative select-none cursor-pointer flex items-center gap-1 pr-2 pl-5 py-1 text-NRblack bg-NRgray"
         }
       >
         {closeBtnHover ? (

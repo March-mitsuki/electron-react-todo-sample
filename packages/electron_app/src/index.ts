@@ -20,6 +20,7 @@ const createWindow = () => {
   });
   mainWindow.webContents.openDevTools();
   mainWindow.loadFile("dist/index.html").catch((err) => console.log(err));
+  return mainWindow;
 };
 
 app
@@ -53,11 +54,16 @@ app
       const data = await sleep;
       return data;
     });
-    createWindow();
+
+    const mainWindow = createWindow();
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
       }
+    });
+
+    ipcMain.on("close-window", () => {
+      mainWindow.close();
     });
   })
   .catch((err) => console.log(err));
@@ -66,8 +72,4 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
-});
-
-ipcMain.on("close-window", () => {
-  app.quit();
 });

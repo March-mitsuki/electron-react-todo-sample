@@ -6,6 +6,7 @@ import TodoList from "./list";
 import FootBtn from "./foot-btn";
 import MenuBar from "./menu-bar";
 import AddTask from "./add-task";
+import CtxMenu from "./ctx-menu";
 
 const Wrapper: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -49,8 +50,9 @@ const Wrapper: React.FC = () => {
         height={300}
         className="absolute -z-10 h-screen w-screen"
       ></canvas>
-      <div className="h-6 bg-NRblack/80 text-center">
-        <div className="text-NRyellow select-none">人类荣光永存</div>
+      {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}
+      <div className="h-6 bg-NRblack flex justify-center items-center">
+        <div className="text-NRyellow select-none text-sm">人类荣光永存</div>
       </div>
       <div className="h-[calc(100vh-1.5rem)] overflow-auto">
         <MenuBar></MenuBar>

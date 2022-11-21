@@ -24,6 +24,8 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
       return { ...state, pageType: paylod };
     case "changeTaskAdding":
       return { ...state, isTaskAdding: paylod };
+    case "setTodoMenu":
+      return { ...state, todoMenu: paylod };
     default:
       throw new Error(`undefined action`);
   }
@@ -33,11 +35,12 @@ export const initialState: AppState = {
   todo: [
     new ToDoit.Todo({
       id: -1,
-      content: "尚未连接服务器",
+      content: "正在连接服务器...",
       create_date: DateTime.now(),
       finish_date: DateTime.now(),
     }),
   ],
+  todoMenu: { id: -1, x: 0, y: 0 },
   pageType: "ongoing",
   // isTaskAdding: false,
   isTaskAdding: true,

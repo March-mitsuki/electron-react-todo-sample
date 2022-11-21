@@ -3,8 +3,11 @@ import { Dispatch } from "react";
 
 export type PageType = "finish" | "ongoing" | "all";
 
+export type TodoMenyType = { id: number; x: number; y: number };
+
 export type AppState = {
   todo: ToDoit.Todo[];
+  todoMenu: TodoMenyType;
   pageType: PageType;
   isTaskAdding: boolean;
 };
@@ -20,7 +23,8 @@ export type AppAction =
   | AppActionType<"setTodo", ToDoit.Todo[]>
   | AppActionType<"toggleFinish", { id: number; nowFinish: boolean }>
   | AppActionType<"changePageType", PageType>
-  | AppActionType<"changeTaskAdding", boolean>;
+  | AppActionType<"changeTaskAdding", boolean>
+  | AppActionType<"setTodoMenu", TodoMenyType>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;
 

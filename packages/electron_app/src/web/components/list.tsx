@@ -4,103 +4,82 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 // local dependencies
 import { useAppCtx } from "../store/store";
 
+// type
+import type { Todo } from "@doit/shared/interfaces/todo_type";
+
 const TodoList: React.FC = () => {
   const { state, dispatch } = useAppCtx();
+
+  const listCtxMenuHandler = (e: React.MouseEvent, elem: Todo) => {
+    e.preventDefault();
+    console.log("right click", elem.id);
+    dispatch({
+      type: "setTodoMenu",
+      paylod: {
+        id: elem.id,
+        x: e.clientX,
+        y: e.clientY,
+      },
+    });
+  };
+
+  const listNode = (elem: Todo, idx: number) => {
+    return (
+      <label
+        key={idx}
+        htmlFor={`todo${idx}`}
+        onContextMenu={(e) => listCtxMenuHandler(e, elem)}
+        className=" flex gap-1 items-center justify-between cursor-pointer "
+      >
+        {state.todoMenu.id === elem.id ? (
+          <>
+            <div className="flex items-center gap-1">
+              <div className="h-[11px] w-[11px] mx-[2px] bg-NRorange rotate-45"></div>
+              <div className="text-NRorange">{elem.content}</div>
+            </div>
+          </>
+        ) : (
+          <div className="relative flex items-center gap-1">
+            <input
+              id={`todo${idx}`}
+              type="checkbox"
+              checked={elem.is_finish}
+              onChange={() =>
+                dispatch({
+                  type: "toggleFinish",
+                  paylod: { id: elem.id, nowFinish: elem.is_finish },
+                })
+              }
+              className="peer appearance-none border-2 h-[15px] w-[15px] border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
+            />
+            <FontAwesomeIcon
+              icon={faCheck}
+              className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
+            />
+            <div className="text-NRblack">{elem.content}</div>
+          </div>
+        )}
+        <div
+          className={state.todoMenu.id === elem.id ? "text-NRorange" : "text-NRblack"}
+        >{`${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}</div>
+      </label>
+    );
+  };
+
   return (
     <>
       {state.todo.map((elem, idx) => {
         console.log("map render once");
         if (state.pageType === "ongoing") {
           if (!elem.is_finish) {
-            return (
-              <label
-                key={idx}
-                htmlFor={`todo${idx}`}
-                className="flex gap-1 items-center justify-between cursor-pointer"
-              >
-                <div className="relative flex items-center gap-1">
-                  <input
-                    id={`todo${idx}`}
-                    type="checkbox"
-                    checked={elem.is_finish}
-                    onChange={() =>
-                      dispatch({
-                        type: "toggleFinish",
-                        paylod: { id: elem.id, nowFinish: elem.is_finish },
-                      })
-                    }
-                    className="peer appearance-none border-2 h-[15px] w-[15px] rounded-sm border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
-                  />
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
-                  />
-                  <div className="text-NRblack">{elem.content}</div>
-                </div>
-                <div className="text-NRblack">{`${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}</div>
-              </label>
-            );
+            return listNode(elem, idx);
           }
         } else if (state.pageType === "finish") {
           if (elem.is_finish) {
-            return (
-              <label
-                key={idx}
-                htmlFor={`todo${idx}`}
-                className="flex gap-1 items-center justify-between cursor-pointer"
-              >
-                <div className="relative flex items-center gap-1">
-                  <input
-                    id={`todo${idx}`}
-                    type="checkbox"
-                    checked={elem.is_finish}
-                    onChange={() =>
-                      dispatch({
-                        type: "toggleFinish",
-                        paylod: { id: elem.id, nowFinish: elem.is_finish },
-                      })
-                    }
-                    className="peer appearance-none border-2 h-[15px] w-[15px] rounded-sm border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
-                  />
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
-                  />
-                  <div className="text-NRblack">{elem.content}</div>
-                </div>
-                <div className="text-NRblack">{`${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}</div>
-              </label>
-            );
+            return listNode(elem, idx);
           }
         } else {
-          return (
-            <label
-              key={idx}
-              htmlFor={`todo${idx}`}
-              className="flex gap-1 items-center justify-between cursor-pointer"
-            >
-              <div className="relative flex items-center gap-1">
-                <input
-                  id={`todo${idx}`}
-                  type="checkbox"
-                  checked={elem.is_finish}
-                  onChange={() =>
-                    dispatch({
-                      type: "toggleFinish",
-                      paylod: { id: elem.id, nowFinish: elem.is_finish },
-                    })
-                  }
-                  className="peer appearance-none border-2 h-[15px] w-[15px] rounded-sm border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
-                />
-                <FontAwesomeIcon
-                  icon={faCheck}
-                  className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
-                />
-                <div className="text-NRblack">{elem.content}</div>
-              </div>
-              <div className="text-NRblack">{`${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}</div>
-            </label>
-          );
+          return listNode(elem, idx);
         }
       })}
     </>
