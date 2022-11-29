@@ -14,5 +14,5 @@
       "module": "CommonJS"
     }
   },
-  "exclude": ["../solid_frontend"]
+  "exclude": ["../solid_web"]
 }

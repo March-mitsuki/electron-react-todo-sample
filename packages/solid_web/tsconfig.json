@@ -7,7 +7,7 @@
     "types": ["vite/client"],
     "baseUrl": "./",
     "paths": {
-      "@doit/front/*": ["./src/*"]
+      "@doit/web/*": ["./src/*"]
     }
   }
 }
