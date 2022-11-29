@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 type TodoInputData = {
   todo: string;
@@ -12,6 +12,8 @@ type TodoInputData = {
 
 const TodoForm: React.FC = () => {
   const { state, dispatch } = useAppCtx();
+  const [submitBtnHover, setSubmitBtnHover] = useState(false);
+  const [cancelBtnHover, setCancelBtnHover] = useState(false);
   const [newTodoIptData, setNewTodoIptData] = useState<TodoInputData>(() => {
     if (state.changeTodoForm.formType === "edit") {
       const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
@@ -70,41 +72,6 @@ const TodoForm: React.FC = () => {
     return;
   };
 
-  const drawPointerAtCenter = (x: number, y: number, c: HTMLCanvasElement | null) => {
-    if (!c) {
-      return;
-    }
-    const ctx = c.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    ctx.fillStyle = "#4e4b42";
-    ctx.beginPath();
-    ctx.moveTo(x - 50, y - 10);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x - 50, y + 10);
-    ctx.lineTo(x - 70, y);
-    ctx.moveTo(x, y - 15);
-    ctx.arc(x - 5, y - 15, 5, 0, Math.PI * 2);
-    ctx.moveTo(x, y + 15);
-    ctx.arc(x - 5, y + 15, 5, 0, Math.PI * 2);
-    ctx.fill();
-  };
-
-  const clearCanvas = (c: HTMLCanvasElement | null) => {
-    if (!c) {
-      return;
-    }
-    const ctx = c.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    ctx.clearRect(0, 0, c.width, c.height);
-    return;
-  };
-
-  const pointerCanvasRef = useRef<HTMLCanvasElement>(null);
-
   return (
     <>
       <div className=" w-screen h-[2px] bg-NRblack mb-1"></div>
@@ -150,40 +117,66 @@ const TodoForm: React.FC = () => {
       <div className=" relative w-screen flex flex-col gap-2 mb-5">
         <div className=" absolute bg-NRgray/70 h-full w-[8px] left-2"></div>
         <div className=" absolute bg-NRgray/70 h-full w-[3px] left-5"></div>
-        <canvas
-          ref={pointerCanvasRef}
-          width={1032}
-          height={216}
-          className=" absolute h-full w-screen"
-        ></canvas>
-        <button
-          onClick={submitNewTodo}
-          className={
-            " ml-8 mt-2 mr-6 pl-2 text-NRblack bg-NRgray select-none cursor-pointer text-start " +
-            " hover:mr-0 hover:bg-NRblack hover:text-NRyellow " +
-            " z-10"
-          }
-          onMouseEnter={() => drawPointerAtCenter(90, 60, pointerCanvasRef.current)}
-          onMouseLeave={() => clearCanvas(pointerCanvasRef.current)}
-        >
-          {state.changeTodoForm.formType === "add" && "再努努力"}
-          {state.changeTodoForm.formType === "edit" && "修改任务"}
-        </button>
-        <button
-          onClick={() =>
-            dispatch({ type: "changeTodoForm", paylod: { formType: "close", id: null } })
-          }
-          className={
-            " ml-8 mb-2 mr-6 pl-2 text-NRblack bg-NRgray select-none cursor-pointer text-start " +
-            " hover:mr-0 hover:bg-NRblack hover:text-NRyellow" +
-            " z-10"
-          }
-          onMouseEnter={() => drawPointerAtCenter(90, 155, pointerCanvasRef.current)}
-          onMouseLeave={() => clearCanvas(pointerCanvasRef.current)}
-        >
-          {state.changeTodoForm.formType === "add" && "还是算了"}
-          {state.changeTodoForm.formType === "edit" && "就按原来的"}
-        </button>
+        <div className={" flex items-center gap-1 " + " mt-2 ml-2 z-10 "}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 370.74 192"
+            className={submitBtnHover ? " h-5 w-5 " : " h-5 w-5 invisible "}
+            fill="#4e4b42"
+          >
+            <polygon
+              points="368.86 96 102.52 22.82 .86 96 102.52 169.18 368.86 96"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
+            <circle cx="337.36" cy="22.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+            <circle cx="337.36" cy="169.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+          </svg>
+          <button
+            onClick={submitNewTodo}
+            onMouseEnter={() => setSubmitBtnHover(true)}
+            onMouseLeave={() => setSubmitBtnHover(false)}
+            className={
+              " flex-auto pl-2 mr-6 " +
+              " text-NRblack bg-NRgray select-none cursor-pointer text-start " +
+              " hover:mr-0 hover:bg-NRblack hover:text-NRyellow "
+            }
+          >
+            {state.changeTodoForm.formType === "add" && "再努努力"}
+            {state.changeTodoForm.formType === "edit" && "修改任务"}
+          </button>
+        </div>
+        <div className={" flex items-center gap-1 " + " mb-2 ml-2 z-10 "}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 370.74 192"
+            className={cancelBtnHover ? " h-5 w-5" : " h-5 w-5 invisible "}
+            fill="#4e4b42"
+          >
+            <polygon
+              points="368.86 96 102.52 22.82 .86 96 102.52 169.18 368.86 96"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
+            <circle cx="337.36" cy="22.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+            <circle cx="337.36" cy="169.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+          </svg>
+          <button
+            onClick={() =>
+              dispatch({ type: "changeTodoForm", paylod: { formType: "close", id: null } })
+            }
+            onMouseEnter={() => setCancelBtnHover(true)}
+            onMouseLeave={() => setCancelBtnHover(false)}
+            className={
+              " flex-auto pl-2 mr-6 " +
+              " text-NRblack bg-NRgray select-none cursor-pointer text-start " +
+              " hover:mr-0 hover:bg-NRblack hover:text-NRyellow"
+            }
+          >
+            {state.changeTodoForm.formType === "add" && "还是算了"}
+            {state.changeTodoForm.formType === "edit" && "就按原来的"}
+          </button>
+        </div>
       </div>
     </>
   );

@@ -1,6 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-
 // local dependencies
 import { useAppCtx } from "../store/store";
 
@@ -54,10 +51,16 @@ const TodoList: React.FC = () => {
               }
               className="peer appearance-none border-2 h-[15px] w-[15px] border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
             />
-            <FontAwesomeIcon
-              icon={faCheck}
-              className="text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
-            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={3.5}
+              stroke="currentColor"
+              className="w-[17px] h-[17px] -left-[1px] text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
             <div className="text-NRblack truncate w-[calc(100vw/2)] ">{elem.content}</div>
           </div>
         )}
