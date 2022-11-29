@@ -61,14 +61,12 @@ const TodoList: React.FC = () => {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
-            <div className="text-NRblack truncate w-[calc(100vw/2)] ">{elem.content}</div>
+            <div className="text-NRblack truncate w-[calc(100vw/3)] ">{elem.content}</div>
           </div>
         )}
         <div
           className={
-            state.todoMenu.id === elem.id
-              ? "text-NRorange w-[90px] truncate"
-              : "text-NRblack w-[90px] truncate"
+            state.todoMenu.id === elem.id ? " text-NRorange truncate" : " text-NRblack truncate"
           }
         >
           {elem.finish_date_obj.year > DateTime.now().year

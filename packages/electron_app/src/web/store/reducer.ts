@@ -33,7 +33,7 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     changeTodo.finish_date_obj = dateToObj({
       date: newFinishDate,
       timezone: "Asia/Tokyo",
-      locale: "JP",
+      locale: "zh",
     });
     return { ...state, todo: dc };
     //

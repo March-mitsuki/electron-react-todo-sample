@@ -66,7 +66,11 @@ const TodoForm: React.FC = () => {
       return;
     }
     const finish_date = DateTime.fromFormat(date, "yyLLdd");
-    if (finish_date < DateTime.now()) {
+    if (
+      finish_date.year < DateTime.now().year ||
+      finish_date.month < DateTime.now().month ||
+      finish_date.day < DateTime.now().day
+    ) {
       alert("你难道要穿越到过去完成这个任务吗? 请检查你的时间");
       return;
     }
