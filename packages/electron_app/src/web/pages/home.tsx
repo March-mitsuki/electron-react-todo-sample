@@ -16,7 +16,7 @@ const Home: React.FC = () => {
     eleAPI.send
       .getAllTodo()
       .then((data) => {
-        dispatch({ type: "setTodo", paylod: data });
+        dispatch({ type: "setTodo", payload: data });
       })
       .catch((err) => console.log("get all todo err", err));
   }, []); // eslint-disable-line

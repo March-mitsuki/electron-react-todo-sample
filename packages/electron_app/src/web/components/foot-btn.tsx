@@ -32,7 +32,7 @@ const FootBtn: React.FC = () => {
         )}
         <button
           onClick={() =>
-            dispatch({ type: "changeTodoForm", paylod: { formType: "add", id: null } })
+            dispatch({ type: "changeTodoForm", payload: { formType: "add", id: null } })
           }
         >
           再坚持一会

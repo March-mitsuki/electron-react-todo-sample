@@ -14,7 +14,7 @@ const TodoList: React.FC = () => {
     console.log("right click", elem.id);
     dispatch({
       type: "setTodoMenu",
-      paylod: {
+      payload: {
         id: elem.id,
         x: e.clientX,
         y: e.clientY,
@@ -46,7 +46,7 @@ const TodoList: React.FC = () => {
               onChange={() =>
                 dispatch({
                   type: "toggleFinish",
-                  paylod: { id: elem.id, nowFinish: elem.is_finish },
+                  payload: { id: elem.id, nowFinish: elem.is_finish },
                 })
               }
               className="peer appearance-none border-2 h-[15px] w-[15px] border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"

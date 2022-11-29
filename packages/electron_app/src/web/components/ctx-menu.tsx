@@ -8,7 +8,7 @@ const CtxMenu: React.FC = () => {
 
   return (
     <div
-      onClick={() => dispatch({ type: "setTodoMenu", paylod: { id: -1, x: 0, y: 0 } })}
+      onClick={() => dispatch({ type: "setTodoMenu", payload: { id: -1, x: 0, y: 0 } })}
       className=" absolute z-20 w-screen h-screen "
     >
       <div
@@ -20,7 +20,7 @@ const CtxMenu: React.FC = () => {
         <div className=" absolute bg-NRyellow/80 h-full w-[2px] left-3 "></div>
         <div className=" ml-5 my-1 flex flex-col ">
           <button
-            onClick={() => dispatch({ type: "deleteTodo", paylod: state.todoMenu.id })}
+            onClick={() => dispatch({ type: "deleteTodo", payload: state.todoMenu.id })}
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "
           >
             删除
@@ -29,7 +29,7 @@ const CtxMenu: React.FC = () => {
             onClick={() =>
               dispatch({
                 type: "changeTodoForm",
-                paylod: { formType: "edit", id: state.todoMenu.id },
+                payload: { formType: "edit", id: state.todoMenu.id },
               })
             }
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "

@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
+import { useState } from "react";
 
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
-
-import { useState } from "react";
+import { weblogger } from "@doit/shared/utils";
+import { EditTodoData } from "../store/types";
 
 type TodoInputData = {
   todo: string;
@@ -14,13 +15,24 @@ const TodoForm: React.FC = () => {
   const { state, dispatch } = useAppCtx();
   const [submitBtnHover, setSubmitBtnHover] = useState(false);
   const [cancelBtnHover, setCancelBtnHover] = useState(false);
-  const [newTodoIptData, setNewTodoIptData] = useState<TodoInputData>(() => {
+  const [todoIptData, setTodoIptData] = useState<TodoInputData>(() => {
     if (state.changeTodoForm.formType === "edit") {
       const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
       const currentTodo = state.todo[idx];
+      const dateYearStr = currentTodo.finish_date_obj.year.toString();
+      const dateYear = Number(
+        dateYearStr[dateYearStr.length - 1] + dateYearStr[dateYearStr.length - 2],
+      );
+      if (isNaN(dateYear)) {
+        weblogger.err("todo-form", "can not find date year", dateYearStr, dateYear);
+        return {
+          todo: "err",
+          date: "can not get date",
+        };
+      }
       return {
         todo: currentTodo.content,
-        date: `${currentTodo.finish_date_obj.year}${currentTodo.finish_date_obj.month}${currentTodo.finish_date_obj.day}`,
+        date: `${dateYear}${currentTodo.finish_date_obj.month}${currentTodo.finish_date_obj.day}`,
       };
     } else {
       return {
@@ -31,7 +43,7 @@ const TodoForm: React.FC = () => {
   });
 
   const submitNewTodo = () => {
-    const date = newTodoIptData.date;
+    const date = todoIptData.date;
     const year = Number(date.slice(0, 2));
     const month = Number(date.slice(2, 4));
     const day = Number(date.slice(4, 6));
@@ -58,17 +70,29 @@ const TodoForm: React.FC = () => {
       alert("你难道要穿越到过去完成这个任务吗? 请检查你的时间");
       return;
     }
-    const newTask = new ToDoit.Todo({
+    const newTodo = new ToDoit.Todo({
       id: Date.now(),
       create_date: DateTime.now(),
       finish_date: finish_date,
-      content: newTodoIptData.todo,
+      content: todoIptData.todo,
     });
-    dispatch({ type: "addTodo", paylod: newTask });
-    setNewTodoIptData({
-      todo: "",
-      date: "",
-    });
+    if (state.changeTodoForm.formType === "add") {
+      dispatch({ type: "addTodo", payload: newTodo });
+      setTodoIptData({
+        todo: "",
+        date: "",
+      });
+    } else if (state.changeTodoForm.formType === "edit") {
+      const editData: EditTodoData = {
+        id: state.changeTodoForm.id,
+        todo: todoIptData.todo,
+        date: todoIptData.date,
+      };
+      dispatch({ type: "editTodo", payload: editData });
+      dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } });
+    } else {
+      weblogger.err("todo-from", "incurrent from type", state.changeTodoForm);
+    }
     return;
   };
 
@@ -80,10 +104,10 @@ const TodoForm: React.FC = () => {
         <input
           type="text"
           placeholder="e.g.征服世界"
-          value={newTodoIptData.todo}
+          value={todoIptData.todo}
           onChange={(e) =>
-            setNewTodoIptData((pre) => {
-              return { ...pre, task: e.target.value };
+            setTodoIptData((pre) => {
+              return { ...pre, todo: e.target.value };
             })
           }
           autoComplete="off"
@@ -99,9 +123,9 @@ const TodoForm: React.FC = () => {
         <input
           type="text"
           placeholder={`e.g.${DateTime.now().toFormat("yyLLdd")}`}
-          value={newTodoIptData.date}
+          value={todoIptData.date}
           onChange={(e) => {
-            setNewTodoIptData((pre) => {
+            setTodoIptData((pre) => {
               return { ...pre, date: e.target.value };
             });
           }}
@@ -163,7 +187,7 @@ const TodoForm: React.FC = () => {
           </svg>
           <button
             onClick={() =>
-              dispatch({ type: "changeTodoForm", paylod: { formType: "close", id: null } })
+              dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } })
             }
             onMouseEnter={() => setCancelBtnHover(true)}
             onMouseLeave={() => setCancelBtnHover(false)}

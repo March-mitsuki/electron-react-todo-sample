@@ -8,7 +8,7 @@ const MenuBar: React.FC = () => {
     <>
       <div className="grid grid-cols-3 gap-2 px-5 pt-2 select-none">
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: PageType.ongoing })}
+          onClick={() => dispatch({ type: "changePageType", payload: PageType.ongoing })}
           className={
             state.pageType === PageType.ongoing
               ? "text-NRgray bg-NRblack cursor-pointer"
@@ -27,7 +27,7 @@ const MenuBar: React.FC = () => {
           </div>
         </div>
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: PageType.finish })}
+          onClick={() => dispatch({ type: "changePageType", payload: PageType.finish })}
           className={
             state.pageType === PageType.finish
               ? "text-NRgray bg-NRblack cursor-pointer"
@@ -46,7 +46,7 @@ const MenuBar: React.FC = () => {
           </div>
         </div>
         <div
-          onClick={() => dispatch({ type: "changePageType", paylod: PageType.all })}
+          onClick={() => dispatch({ type: "changePageType", payload: PageType.all })}
           className={
             state.pageType === PageType.all
               ? "text-NRgray bg-NRblack cursor-pointer"

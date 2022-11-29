@@ -1,37 +1,59 @@
 import { DateTime } from "luxon";
 
+// local dependencies
+import { weblogger } from "@doit/shared/utils";
+
 // type
 import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
+import { dateToObj } from "@doit/shared/utils/date";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
-  const { type, paylod } = action;
+  const { type, payload } = action;
   if (type === "addTodo") {
-    //
-    state.todo.push(paylod);
+    state.todo.push(payload);
     return { ...state, todo: state.todo, isInit: true };
-  } else if (type === "deleteTodo") {
     //
-    const idx = state.todo.findIndex((x) => x.id === paylod);
+  } else if (type === "deleteTodo") {
+    const idx = state.todo.findIndex((x) => x.id === payload);
     state.todo.splice(idx, 1);
     return { ...state, todo: state.todo };
+    //
+  } else if (type === "editTodo") {
+    const changeTodoIdx = state.todo.findIndex((x) => x.id === payload.id);
+    const dc = state.todo.map((x) => x);
+    if (changeTodoIdx < 0) {
+      weblogger.err("edit-task", "can not find edit task index", state.changeTodoForm);
+      return { ...state };
+    }
+    const changeTodo = dc[changeTodoIdx];
+    const newFinishDate = DateTime.fromFormat(payload.date, "yyLLdd");
+    changeTodo.finish_date = newFinishDate;
+    changeTodo.content = payload.todo;
+    changeTodo.finish_date_obj = dateToObj({
+      date: newFinishDate,
+      timezone: "Asia/Tokyo",
+      locale: "JP",
+    });
+    return { ...state, todo: dc };
+    //
   } else if (type === "setTodo") {
+    return { ...state, todo: payload };
     //
-    return { ...state, todo: paylod };
   } else if (type === "toggleFinish") {
-    //
-    const idx = state.todo.findIndex((x) => x.id === paylod.id);
-    state.todo[idx].is_finish = !paylod.nowFinish;
+    const idx = state.todo.findIndex((x) => x.id === payload.id);
+    state.todo[idx].is_finish = !payload.nowFinish;
     return { ...state, todo: state.todo };
+    //
   } else if (type === "changePageType") {
+    return { ...state, pageType: payload };
     //
-    return { ...state, pageType: paylod };
   } else if (type === "changeTodoForm") {
+    return { ...state, changeTodoForm: payload };
     //
-    return { ...state, changeTodoForm: paylod };
   } else if (type === "setTodoMenu") {
+    return { ...state, todoMenu: payload };
     //
-    return { ...state, todoMenu: paylod };
   } else {
     throw new Error(`undefined action`);
   }
