@@ -3,7 +3,7 @@ import { initDotEnv } from "@doit/shared";
 import http from "http";
 import express from "express";
 
-import { nodelogger } from "@doit/shared/utils";
+import { serverlogger } from "@doit/shared/utils";
 
 async function main() {
   await initDotEnv();
@@ -24,7 +24,7 @@ async function main() {
   });
 
   server.listen(PORT, () => {
-    nodelogger.nomal("server", "server is runnning on port", PORT);
+    serverlogger.nomal("server", "server is runnning on port", PORT);
   });
 }
 
