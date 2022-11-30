@@ -9,10 +9,5 @@
       "@doit/electron/*": ["./src/*"]
     }
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  },
-  "exclude": ["../solid_web"]
+  "exclude": ["../solid_web", "../server"]
 }

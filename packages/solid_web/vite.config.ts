@@ -11,6 +11,6 @@ export default defineConfig({
     target: "esnext",
   },
   resolve: {
-    alias: [{ find: "@doit/front/", replacement: "/src/" }],
+    alias: [{ find: "@doit/web/", replacement: "/src/" }],
   },
 });

@@ -13,8 +13,10 @@
     "run:web": "yarn workspace @doit/solid_web",
     "run:electron": "yarn workspace @doit/electron_app",
     "run:shared": "yarn workspace @doit/shared",
+    "run:server": "yarn workspace @doit/server",
     "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
     "dev:electron:app": "yarn workspace @doit/electron_app dev:app",
+    "dev:server": "yarn workspace @doit/server dev",
     "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
   },
   "devDependencies": {
