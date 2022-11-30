@@ -10,6 +10,7 @@
     "packages/*"
   ],
   "scripts": {
+    "init-app": "./scripts/init_app.sh",
     "run:web": "yarn workspace @doit/solid_web",
     "run:electron": "yarn workspace @doit/electron_app",
     "run:shared": "yarn workspace @doit/shared",
@@ -31,6 +32,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "dotenv": "^16.0.3",
     "luxon": "^3.1.0"
   }
 }

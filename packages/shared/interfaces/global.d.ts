@@ -10,4 +10,9 @@ declare global {
     electronAPI: costomeElectronAPI;
   }
   namespace Electron {}
+  namespace NodeJS {
+    interface ProcessEnv {
+      DOIT_ROOT: string | undefined;
+    }
+  }
 }

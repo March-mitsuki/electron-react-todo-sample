@@ -1,12 +1,27 @@
-enum ansiColor {
+import { writeFile } from "fs/promises";
+import { DateTime } from "luxon";
+import path from "path";
+
+enum ansiFont {
+  black = "\x1b[30m",
+  backBlack = "\x1b[40m",
   red = "\x1b[31m",
+  backRed = "\x1b[41m",
   green = "\x1b[32m",
+  backGreen = "\x1b[42m",
   yellow = "\x1b[33m",
+  backYellow = "\x1b[43m",
   blue = "\x1b[34m",
+  backBlue = "\x1b[44m",
+  white = "\x1b[37m",
+  backWhite = "\x1b[47m",
+  brightBlack = "\x1b[90m",
+  backBrightBlack = "\x1b[100m",
+  fontBold = "\x1b[1m",
   reset = "\x1b[0m",
 }
 
-const logger = (color: ansiColor) => {
+const logger = (color: ansiFont) => {
   return (prefix: string, ...args: unknown[]) => {
     const parsedArgs = args
       .map((elem) => {
@@ -19,13 +34,32 @@ const logger = (color: ansiColor) => {
         }
       })
       .join(` `);
-    console.log(`${color}[${prefix}]${ansiColor.reset} ${parsedArgs}`);
+
+    console.log(
+      `[${color}${prefix}${ansiFont.reset}]` +
+        ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(
+          "yyyy'-'LL'-'dd'-'hh'-'mm'-'ss",
+        )}${ansiFont.reset}` +
+        ` ${parsedArgs}`,
+    );
+
+    if (process.env.DOIT_ROOT) {
+      writeFile(
+        path.resolve(process.env.DOIT_ROOT, "logs/server.log"),
+        `[${prefix}]-[${DateTime.now().toFormat("yyyy'-'LL'-'dd'-'hh'-'mm'-'ss")}] ${parsedArgs}\n`,
+        {
+          flag: "a",
+        },
+      ).catch((err) => {
+        console.log(`[${ansiFont.red}writeLogToFile${ansiFont.reset}]`, err);
+      });
+    }
 
     return;
   };
 };
 
-export const err = logger(ansiColor.red);
-export const warn = logger(ansiColor.yellow);
-export const nomal = logger(ansiColor.green);
-export const info = logger(ansiColor.blue);
+export const err = logger(ansiFont.red);
+export const warn = logger(ansiFont.yellow);
+export const nomal = logger(ansiFont.green);
+export const info = logger(ansiFont.blue);
