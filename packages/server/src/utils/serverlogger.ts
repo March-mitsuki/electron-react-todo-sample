@@ -18,13 +18,25 @@ enum ansiFont {
   brightBlack = "\x1b[90m",
   backBrightBlack = "\x1b[100m",
   fontBold = "\x1b[1m",
+  underLine = "\x1b[4m",
   reset = "\x1b[0m",
 }
 
-const luxonFmt = "yyyy'-'LL'-'dd'-'HH'-'mm'-'ss'-'Z";
+type LogLevel = "err" | "warn" | "info" | "nomal";
 
-const logger = (color: ansiFont) => {
-  return (prefix: string, ...args: unknown[]) => {
+const luxonFmt = "yyyy'-'LL'-'dd HH'-'mm'-'ss Z";
+
+const logger = (color: ansiFont, level: LogLevel) => {
+  return (prefix: string, filename: string, ...args: unknown[]) => {
+    let filePath = "no/filename/input";
+    // 判断第二个引数是否为path, 若不是则交给args作为普通信息处理
+    const testFilename = filename.match(/(.*\/.*\..*)\s?/);
+    if (testFilename) {
+      filePath = path.relative(process.cwd(), testFilename[1]);
+    } else {
+      args = [filename, ...args];
+    }
+
     const parsedArgs = args
       .map((elem) => {
         if (elem instanceof Object) {
@@ -42,17 +54,32 @@ const logger = (color: ansiFont) => {
         ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
           ansiFont.reset
         }` +
-        ` ${parsedArgs}`,
+        ` ${parsedArgs}` +
+        ` ${ansiFont.underLine}${filePath}${ansiFont.reset}`,
     );
 
     if (process.env.DOIT_ROOT) {
-      writeFile(
-        path.resolve(process.env.DOIT_ROOT, "logs/server.log"),
-        `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedArgs}\n`,
-        {
-          flag: "a",
-        },
-      ).catch((err) => {
+      let logFilePath = "logs/server.log";
+      switch (level) {
+        case "err":
+          logFilePath = "logs/server_err.log";
+          break;
+        case "warn":
+          logFilePath = "logs/server_warn.log";
+          break;
+        case "nomal":
+          logFilePath = "logs/server_nomal.log";
+          break;
+        case "info":
+          logFilePath = "logs/server_info.log";
+          break;
+      }
+
+      const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedArgs}\n`;
+
+      writeFile(path.resolve(process.env.DOIT_ROOT, logFilePath), writeLogData, {
+        flag: "a",
+      }).catch((err) => {
         console.log(`[${ansiFont.red}writeLogToFile${ansiFont.reset}]`, err);
       });
     }
@@ -61,7 +88,7 @@ const logger = (color: ansiFont) => {
   };
 };
 
-export const err = logger(ansiFont.red);
-export const warn = logger(ansiFont.yellow);
-export const nomal = logger(ansiFont.green);
-export const info = logger(ansiFont.blue);
+export const err = logger(ansiFont.red, "err");
+export const warn = logger(ansiFont.yellow, "warn");
+export const nomal = logger(ansiFont.green, "nomal");
+export const info = logger(ansiFont.blue, "info");

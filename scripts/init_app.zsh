@@ -48,6 +48,9 @@ main() {
 
   echo "DATABASE_URL=$PRISMA_DB_URL" >>"$SERVER_PATH/.env.local"
 
+  # make logs directory
+  mkdir logs
+
   echo "${ANSI_GREEN}DONE${ANSI_RESET} init app successful."
 }
 

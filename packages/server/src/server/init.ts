@@ -21,7 +21,7 @@ const startServer = () => {
   });
 
   server.listen(PORT, () => {
-    serverlogger.nomal("server", "server is runnning on port", PORT);
+    serverlogger.nomal("server", __filename, "server is runnning on port", PORT);
   });
 };
 
