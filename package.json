@@ -16,6 +16,7 @@
     "run:electron": "yarn workspace @doit/electron_app",
     "run:shared": "yarn workspace @doit/shared",
     "run:server": "yarn workspace @doit/server",
+    "run:prisma": "yarn workspace @doit/server env-cmd -f ./.env.local prisma",
     "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
     "dev:electron:app": "yarn workspace @doit/electron_app dev:app",
     "dev:server": "yarn workspace @doit/server dev",
