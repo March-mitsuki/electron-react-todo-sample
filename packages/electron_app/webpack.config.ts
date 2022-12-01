@@ -16,7 +16,7 @@ const common: Configuration = {
    * macOS でビルドに失敗する場合のワークアラウンド
    * https://github.com/yan-foto/electron-reload/issues/71
    */
-  externals: ["fsevents"],
+  externals: ["fsevents", "dotenv", "path"],
   // 出力先：デフォルトは 'dist'
   output: {
     // webpack@5 + electron では必須の設定
@@ -33,7 +33,7 @@ const common: Configuration = {
          * ただし node_modules ディレクトリは除外する
          */
         test: /\.tsx?$/,
-        exclude: [/node_modules/, /solid_frontend/],
+        exclude: [/node_modules/],
         loader: "ts-loader",
       },
       {

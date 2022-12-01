@@ -18,6 +18,8 @@
     "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
     "dev:electron:app": "yarn workspace @doit/electron_app dev:app",
     "dev:server": "yarn workspace @doit/server dev",
+    "build:server": "yarn workspace @doit/server build",
+    "build:server:dev": "yarn workspace @doit/server build:dev",
     "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
   },
   "devDependencies": {

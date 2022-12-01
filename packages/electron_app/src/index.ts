@@ -5,7 +5,6 @@ import { DateTime } from "luxon";
 
 // type
 import { ToDoit } from "@doit/shared";
-import { nodelogger } from "@doit/shared/utils";
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -46,7 +45,6 @@ app
                 finish_date: DateTime.now(),
               }),
             ];
-            nodelogger.info("electron-main", "sleep resolve");
             resolve(todoList);
           } catch (err) {
             reject(err);

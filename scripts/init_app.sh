@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+### please do NOT run this script directly
+### this file should be run by yarn init-app in root workspace
+
 ANSI_RED='\x1b[31m'
 ANSI_GREEN='\x1b[32m'
 ANSI_RESET='\x1b[0m'

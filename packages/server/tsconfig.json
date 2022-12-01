@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "module": "CommonJS",
+    "noEmit": false,
     "paths": {
       "@/doit/server/*": ["./src/*"]
     }
@@ -11,5 +12,6 @@
     "compilerOptions": {
       "module": "CommonJS"
     }
-  }
+  },
+  "exclude": ["../solid_web", "../electron_app"]
 }

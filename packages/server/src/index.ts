@@ -3,7 +3,7 @@ import { initDotEnv } from "@doit/shared";
 import http from "http";
 import express from "express";
 
-import { serverlogger } from "@doit/shared/utils";
+import { serverlogger } from "./utils";
 
 async function main() {
   await initDotEnv();

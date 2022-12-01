@@ -1,8 +1,10 @@
+import path from "path";
+
 module.exports = {
   extends: "../../.eslintrc.cjs",
   plugins: ["react-hooks"],
   parserOptions: {
-    tsconfigRootDir: __dirname,
+    tsconfigRootDir: path.resolve(__dirname),
     project: ["./tsconfig.json"],
   },
   rules: {
