@@ -21,6 +21,8 @@
     "dev:server": "yarn workspace @doit/server dev",
     "build:server": "yarn workspace @doit/server build",
     "build:server:dev": "yarn workspace @doit/server build:dev",
+    "db:migrate": "yarn workspace @doit/server db:migrate",
+    "db:migrate:dev": "yarn workspace @doit/server db:migrate:dev",
     "lint": "yarn eslint --ignore-path .gitignore **/*.{ts,js}",
     "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
   },
@@ -37,6 +39,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "env-cmd": "^10.1.0",
     "luxon": "^3.1.0"
   }
 }

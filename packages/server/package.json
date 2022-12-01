@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "ts-node-dev --respawn --exit-child -- ./src/index.ts",
+    "db:migrate:dev": "env-cmd -f ./.env.local -- yarn prisma migrate dev",
     "build": "rm -rf ./dist && webpack --mode production --progress",
     "build:dev": "rm -rf ./dist && webpack --mode development --progress"
   },
