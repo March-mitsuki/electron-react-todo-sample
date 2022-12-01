@@ -453,6 +453,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@prisma/engines@4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-4.7.0.tgz#cbc05aa1fe50ab10795e869654be8fdd419dd153"
+  integrity sha512-afKrVFktaZ1pOK12/uFl2hRsBWIJZuC5FdDtacuKk5x/mR+rC5AbA+PlN3ZCZbmYTaeiBMHjcU5wbT5z2N3nSQ==
+
 "@remix-run/router@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.0.3.tgz#953b88c20ea00d0eddaffdc1b115c08474aa295d"
@@ -3908,6 +3913,13 @@ pretty-error@^4.0.0:
   dependencies:
     lodash "^4.17.20"
     renderkid "^3.0.0"
+
+prisma@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/prisma/-/prisma-4.7.0.tgz#07edcd7d99d79f823aa0bda019c75dc8e0e329d4"
+  integrity sha512-VsecNo0Ca3+bDTzSpJqIpdupKVhhQ8aOYeWc09JlUM89knqvhSrlMrg0U8BiOD4tFrY1OPaCcraK8leDBxKMBg==
+  dependencies:
+    "@prisma/engines" "4.7.0"
 
 progress@^2.0.3:
   version "2.0.3"
