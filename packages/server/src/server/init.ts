@@ -3,9 +3,8 @@ import express from "express";
 
 import { serverlogger } from "../utils";
 
-const startServer = () => {
+const startServer = (PORT: number) => {
   const app = express();
-  const PORT = 3194;
   app.use(express.json());
   app.use(
     express.urlencoded({

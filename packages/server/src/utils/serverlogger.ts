@@ -4,29 +4,32 @@ import path from "path";
 
 enum ansiFont {
   black = "\x1b[30m",
-  backBlack = "\x1b[40m",
   red = "\x1b[31m",
-  backRed = "\x1b[41m",
   green = "\x1b[32m",
-  backGreen = "\x1b[42m",
   yellow = "\x1b[33m",
-  backYellow = "\x1b[43m",
   blue = "\x1b[34m",
-  backBlue = "\x1b[44m",
   white = "\x1b[37m",
-  backWhite = "\x1b[47m",
   brightBlack = "\x1b[90m",
-  backBrightBlack = "\x1b[100m",
   fontBold = "\x1b[1m",
   underLine = "\x1b[4m",
   reset = "\x1b[0m",
+}
+
+enum ansiBack {
+  black = "\x1b[40m",
+  red = "\x1b[41m",
+  green = "\x1b[42m",
+  yellow = "\x1b[43m",
+  blue = "\x1b[44m",
+  white = "\x1b[47m",
+  brightBlack = "\x1b[100m",
 }
 
 type LogLevel = "err" | "warn" | "info" | "nomal";
 
 const luxonFmt = "yyyy'-'LL'-'dd HH'-'mm'-'ss Z";
 
-const logger = (color: ansiFont, level: LogLevel) => {
+const logger = (backColor: ansiBack, level: LogLevel) => {
   return (prefix: string, filename: string, ...args: unknown[]) => {
     let filePath = "no/filename/input";
     // 判断第二个引数是否为path, 若不是则交给args作为普通信息处理
@@ -50,7 +53,7 @@ const logger = (color: ansiFont, level: LogLevel) => {
       .join(` `);
 
     console.log(
-      `[${color}${prefix}${ansiFont.reset}]` +
+      `${backColor} ${prefix} ${ansiFont.reset}` +
         ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
           ansiFont.reset
         }` +
@@ -58,7 +61,7 @@ const logger = (color: ansiFont, level: LogLevel) => {
         ` ${ansiFont.underLine}${filePath}${ansiFont.reset}`,
     );
 
-    if (process.env.DOIT_ROOT) {
+    if (process.env.DOYA_ROOT) {
       let logFilePath = "logs/server.log";
       switch (level) {
         case "err":
@@ -77,7 +80,7 @@ const logger = (color: ansiFont, level: LogLevel) => {
 
       const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedArgs}\n`;
 
-      writeFile(path.resolve(process.env.DOIT_ROOT, logFilePath), writeLogData, {
+      writeFile(path.resolve(process.env.DOYA_ROOT, logFilePath), writeLogData, {
         flag: "a",
       }).catch((err) => {
         console.log(`[${ansiFont.red}writeLogToFile${ansiFont.reset}]`, err);
@@ -88,7 +91,7 @@ const logger = (color: ansiFont, level: LogLevel) => {
   };
 };
 
-export const err = logger(ansiFont.red, "err");
-export const warn = logger(ansiFont.yellow, "warn");
-export const nomal = logger(ansiFont.green, "nomal");
-export const info = logger(ansiFont.blue, "info");
+export const err = logger(ansiBack.red, "err");
+export const warn = logger(ansiBack.yellow, "warn");
+export const nomal = logger(ansiBack.green, "nomal");
+export const info = logger(ansiBack.blue, "info");

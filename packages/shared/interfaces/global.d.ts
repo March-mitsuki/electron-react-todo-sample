@@ -12,7 +12,8 @@ declare global {
   namespace Electron {}
   namespace NodeJS {
     interface ProcessEnv {
-      DOIT_ROOT: string | undefined;
+      DOYA_ROOT: string | undefined;
+      DOYA_SERVER_PORT: string | undefined;
     }
   }
 }

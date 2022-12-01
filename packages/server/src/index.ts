@@ -4,8 +4,17 @@ import { startServer } from "./server";
 
 async function main() {
   await initDotEnv();
+
   prisma.$use(prismaMiddleware.softDelete);
-  startServer();
+
+  if (!process.env.DOYA_SERVER_PORT) {
+    throw new Error("server port is undefined, please see the readme.");
+  }
+  const port = Number(process.env.DOYA_SERVER_PORT);
+  if (isNaN(port)) {
+    throw new Error("server port is not a number, please check your setting.");
+  }
+  startServer(port);
 }
 
 main(); // eslint-disable-line

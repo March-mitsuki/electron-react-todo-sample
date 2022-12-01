@@ -6,7 +6,7 @@ export async function initDotEnv() {
   if (dotenvResult.error) {
     throw dotenvResult.error;
   } else {
-    console.log("\x1b[32m" + "dotenv init sucessfully" + "\x1b[0m");
+    console.log("\x1b[32m" + "dotenv init successfully" + "\x1b[0m");
   }
 }
 

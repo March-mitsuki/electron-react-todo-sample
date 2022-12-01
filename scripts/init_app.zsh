@@ -9,6 +9,10 @@ ANSI_YELLOW='\x1b[33m'
 ANSI_BLUE='\x1b[34m'
 ANSI_RESET='\x1b[0m'
 
+ERR_HEAD="[${ANSI_RED}ERR${ANSI_RESET}]"
+INFO_HEAD="[${ANSI_BLUE}INFO${ANSI_RESET}]"
+WARN_HEAD="[${ANSI_YELLOW}WARN${ANSI_RESET}]"
+
 SHARED_PATH='./packages/shared'
 SERVER_PATH='./packages/server'
 WEB_PATH='./packages/solid_web'
@@ -16,7 +20,7 @@ ELECTRON_PATH='./packages/electron_app'
 
 create_dotenv() {
   if [ $# -ne 1 ]; then
-    echo "${ANSI_RED}create dotenv argument incorrect.${ANSI_RESET}"
+    echo "${ERR_HEAD} create dotenv argument incorrect."
     return 1
   fi
 
@@ -30,7 +34,7 @@ create_dotenv() {
     return 1
   fi
 
-  echo "DOIT_ROOT=$(pwd)" >>"$1/.env.local"
+  echo "DOYA_ROOT=$(pwd)" >>"$1/.env.local"
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -39,33 +43,73 @@ create_dotenv() {
 }
 
 main() {
-  echo "${ANSI_BLUE}INFO${ANSI_RESET} init start..."
+  echo "${INFO_HEAD} init start..."
 
-  create_dotenv $SHARED_PATH
-  create_dotenv $SERVER_PATH
-  create_dotenv $WEB_PATH
-  create_dotenv $ELECTRON_PATH
+  if ! create_dotenv $SHARED_PATH; then
+    echo ""
+    return 1
+  fi
+  if ! create_dotenv $SERVER_PATH; then
+    return 1
+  fi
+  if ! create_dotenv $WEB_PATH; then
+    return 1
+  fi
+  if ! create_dotenv $ELECTRON_PATH; then
+    return 1
+  fi
 
-  echo "DATABASE_URL=$PRISMA_DB_URL" >>"$SERVER_PATH/.env.local"
+  echo "DOYA_DB_URL=$PRISMA_DB_URL" >>"$SERVER_PATH/.env.local"
+  echo "DOYA_SERVER_PORT=$DOYA_SERVER_PORT" >>"$SERVER_PATH/.env.local"
 
-  # make logs directory
-  mkdir logs
+  # make logs directory for server write log to file
+  if [ ! -d "./logs" ]; then
+    mkdir logs
+  fi
 
-  echo "${ANSI_GREEN}DONE${ANSI_RESET} init app successful."
+  echo "[${ANSI_GREEN}DONE${ANSI_RESET}] init app successful."
+
+  return 0
 }
 
-echo "${ANSI_BLUE}INFO${ANSI_RESET} please input prisma database url:"
-PRISMA_DB_URL=
-vared PRISMA_DB_URL
+set_server_port() {
+  echo "${INFO_HEAD} please input a server listening port:"
+  DOYA_SERVER_PORT=3194
+  vared -r "(default=3194) " DOYA_SERVER_PORT
+  echo "server will listen on port ${DOYA_SERVER_PORT}, is OK? [y/n]"
+  while read "PORT_OK"; do
+    case $PORT_OK in
+    [Yy]) {
+      return 0
+    } ;;
+    [Nn]) {
+      echo "${WARN_HEAD} you say no, please check the port and run this script again."
+      return 1
+    } ;;
+    *) {
+      echo "please answer with Yy or Nn"
+    } ;;
+    esac
+  done
+}
+
+echo "${INFO_HEAD} please input prisma database url:"
+vared -c PRISMA_DB_URL
 echo "your db url is: (${PRISMA_DB_URL}), is OK? [y/n]: "
 while read "PRISMA_OK"; do
   case $PRISMA_OK in
   [Yy]) {
-    main
+    set_server_port
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
+    if ! main; then
+      exit 1
+    fi
     exit 0
   } ;;
   [Nn]) {
-    echo "${ANSI_YELLOW}WARN${ANSI_RESET} you say no, please check the database url and start again."
+    echo "${WARN_HEAD} you say no, please check the database url and run this script again."
     exit 1
   } ;;
   *) {
