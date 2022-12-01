@@ -21,6 +21,8 @@ enum ansiFont {
   reset = "\x1b[0m",
 }
 
+const luxonFmt = "yyyy'-'LL'-'dd'-'HH'-'mm'-'ss'-'Z";
+
 const logger = (color: ansiFont) => {
   return (prefix: string, ...args: unknown[]) => {
     const parsedArgs = args
@@ -37,16 +39,16 @@ const logger = (color: ansiFont) => {
 
     console.log(
       `[${color}${prefix}${ansiFont.reset}]` +
-        ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(
-          "yyyy'-'LL'-'dd'-'hh'-'mm'-'ss",
-        )}${ansiFont.reset}` +
+        ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
+          ansiFont.reset
+        }` +
         ` ${parsedArgs}`,
     );
 
     if (process.env.DOIT_ROOT) {
       writeFile(
         path.resolve(process.env.DOIT_ROOT, "logs/server.log"),
-        `[${prefix}]-[${DateTime.now().toFormat("yyyy'-'LL'-'dd'-'hh'-'mm'-'ss")}] ${parsedArgs}\n`,
+        `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedArgs}\n`,
         {
           flag: "a",
         },

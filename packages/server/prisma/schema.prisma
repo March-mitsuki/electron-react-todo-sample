@@ -9,3 +9,16 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Todo {
+  id              Int       @id @default(autoincrement())
+  local           String    @db.VarChar(8)
+  timezone        String    @db.VarChar(16)
+  finish_date     DateTime
+  finish_date_obj Json
+  content         String
+  is_finish       Boolean
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  deleted_at      DateTime?
+}

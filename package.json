@@ -21,6 +21,7 @@
     "dev:server": "yarn workspace @doit/server dev",
     "build:server": "yarn workspace @doit/server build",
     "build:server:dev": "yarn workspace @doit/server build:dev",
+    "lint": "yarn eslint --ignore-path .gitignore **/*.{ts,js}",
     "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
   },
   "devDependencies": {

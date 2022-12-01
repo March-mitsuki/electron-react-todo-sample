@@ -1,5 +1,3 @@
-import path from "path";
-
 module.exports = {
   extends: [
     "eslint:recommended",
@@ -9,13 +7,13 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    tsconfigRootDir: path.resolve(__dirname),
+    tsconfigRootDir: "./",
     project: ["./tsconfig.json"],
   },
   plugins: ["@typescript-eslint"],
   root: true,
   rules: {
-    "@typescript-eslint/no-unsafe-member-access": 0,
+    "@typescript-eslint/no-unsafe-member-access": "off",
   },
   ignorePatterns: [".eslintrc.*"],
 };
