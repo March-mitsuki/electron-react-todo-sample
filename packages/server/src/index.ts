@@ -1,9 +1,9 @@
-import { initDotEnv } from "@doit/shared";
+import { initDotenv } from "./utils";
 import { prisma, prismaMiddleware } from "./db";
 import { startServer } from "./server";
 
 async function main() {
-  await initDotEnv();
+  await initDotenv();
 
   prisma.$use(prismaMiddleware.softDelete);
 
