@@ -84,3 +84,10 @@ https://github.com/catdad/electronmon/pull/67
 # make a production version
 
 production without docker (local mysql OR mariadb)
+
+# todo
+
+- electron-app
+  - [ ] design loading screen
+- server
+- web

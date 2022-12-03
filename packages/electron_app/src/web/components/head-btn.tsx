@@ -10,7 +10,7 @@ const HeadBtn: React.FC = () => {
   const [isHover, setIsHover] = useState(false);
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    if (!state.auth) {
+    if (!state.auth || !state.auth.currentUser) {
       weblogger.err("head-btn", "state.auth is undefinde");
       return;
     }

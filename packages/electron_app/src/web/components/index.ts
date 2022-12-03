@@ -4,3 +4,4 @@ export { default as FootBtn } from "./foot-btn";
 export { default as MenuBar } from "./menu-bar";
 export { default as TodoList } from "./list";
 export { default as HeadBtn } from "./head-btn";
+export { default as Loading } from "./loading";

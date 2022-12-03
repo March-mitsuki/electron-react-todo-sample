@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList, HeadBtn } from "../components";
+import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList, HeadBtn, Loading } from "../components";
 import { weblogger } from "../utils";
 
 const Home: React.FC = () => {
@@ -51,21 +51,27 @@ const Home: React.FC = () => {
         height={300}
         className="absolute -z-10 h-screen w-screen"
       ></canvas>
-      {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}
-      <div className="h-6 bg-NRblack flex justify-center items-center">
-        <HeadBtn></HeadBtn>
-      </div>
-      <div className="h-[calc(100vh-1.5rem)] overflow-auto">
-        <MenuBar></MenuBar>
-        <div className="select-none electron-no-drag px-5 pt-1">
-          <TodoList></TodoList>
-        </div>
-        <div className="flex justify-between px-5 py-3">
-          <FootBtn></FootBtn>
-        </div>
-        {state.changeTodoForm.formType === "add" && <TodoForm></TodoForm>}
-        {state.changeTodoForm.formType === "edit" && <TodoForm></TodoForm>}
-      </div>
+      {state.isInit ? (
+        <>
+          {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}
+          <div className="h-6 bg-NRblack flex justify-center items-center">
+            <HeadBtn></HeadBtn>
+          </div>
+          <div className="h-[calc(100vh-1.5rem)] overflow-auto">
+            <MenuBar></MenuBar>
+            <div className="select-none electron-no-drag px-5 pt-1">
+              <TodoList></TodoList>
+            </div>
+            <div className="flex justify-between px-5 py-3">
+              <FootBtn></FootBtn>
+            </div>
+            {state.changeTodoForm.formType === "add" && <TodoForm></TodoForm>}
+            {state.changeTodoForm.formType === "edit" && <TodoForm></TodoForm>}
+          </div>
+        </>
+      ) : (
+        <Loading></Loading>
+      )}
     </div>
   );
 };
