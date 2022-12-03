@@ -1,25 +1,24 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect } from "react";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList } from "../components";
+import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList, HeadBtn } from "../components";
+import { weblogger } from "../utils";
 
 const Home: React.FC = () => {
-  const { state, dispatch } = useAppCtx();
+  const { state } = useAppCtx();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const eleAPI = window.electronAPI;
 
-  useMemo(() => {
-    if (state.isInit) {
+  useEffect(() => {
+    if (!state.isInit) {
       return;
     }
-    eleAPI.send
-      .getAllTodo()
-      .then((data) => {
-        dispatch({ type: "setTodo", payload: data });
-      })
-      .catch((err) => console.log("get all todo err", err));
-  }, []); // eslint-disable-line
+    if (!state.auth?.currentUser) {
+      weblogger.warn("home", "not signin");
+      location.href = "#/signin";
+      return;
+    }
+  }, [state.isInit]); // eslint-disable-line
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -54,7 +53,7 @@ const Home: React.FC = () => {
       ></canvas>
       {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}
       <div className="h-6 bg-NRblack flex justify-center items-center">
-        <div className="text-NRyellow select-none text-sm">人类荣光永存</div>
+        <HeadBtn></HeadBtn>
       </div>
       <div className="h-[calc(100vh-1.5rem)] overflow-auto">
         <MenuBar></MenuBar>

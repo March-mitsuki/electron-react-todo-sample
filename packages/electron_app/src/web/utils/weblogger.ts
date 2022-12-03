@@ -18,6 +18,6 @@ const logger = (color: string) => {
 };
 
 export const err = logger("red");
-export const warn = logger("yellow");
+export const warn = logger("orange");
 export const nomal = logger("green");
 export const info = logger("blue");

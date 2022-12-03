@@ -1,6 +1,8 @@
 import { ToDoit } from "@doit/shared";
 import { Dispatch } from "react";
 
+import type { Auth } from "firebase/auth";
+
 export enum PageType {
   ongoing = 1,
   finish = 2,
@@ -22,6 +24,7 @@ export type AppState = {
   todoMenu: TodoMeneType;
   pageType: PageType;
   changeTodoForm: TodoFormTypes;
+  auth: Auth | undefined;
 };
 
 export type AppActionType<T, P> = {
@@ -37,7 +40,9 @@ export type AppAction =
   | AppActionType<"toggleFinish", { id: number; nowFinish: boolean }>
   | AppActionType<"changePageType", PageType>
   | AppActionType<"changeTodoForm", TodoFormTypes>
-  | AppActionType<"setTodoMenu", TodoMeneType>;
+  | AppActionType<"setTodoMenu", TodoMeneType>
+  | AppActionType<"setAuth", Auth>
+  | AppActionType<"init", AppState>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;
 

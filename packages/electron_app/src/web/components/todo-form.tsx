@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
-import { weblogger } from "@doit/shared/utils";
+import { weblogger } from "../utils";
 import { EditTodoData } from "../store/types";
 
 type TodoInputData = {

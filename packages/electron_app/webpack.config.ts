@@ -16,7 +16,7 @@ const common: Configuration = {
    * macOS でビルドに失敗する場合のワークアラウンド
    * https://github.com/yan-foto/electron-reload/issues/71
    */
-  externals: ["fsevents", "dotenv", "path"],
+  externals: ["fsevents"],
   // 出力先：デフォルトは 'dist'
   output: {
     // webpack@5 + electron では必須の設定
@@ -100,6 +100,19 @@ const renderer: Configuration = {
       template: path.resolve(__dirname, "src/web/index.html"),
     }),
   ],
+  resolve: {
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".json"],
+    alias: {
+      "@firebase/auth": path.resolve(
+        __dirname,
+        "../../node_modules/@firebase/auth/dist/esm2017/index.js",
+      ),
+      "@firebase/app": path.resolve(
+        __dirname,
+        "../../node_modules/@firebase/app/dist/esm/index.esm2017.js",
+      ),
+    },
+  },
 };
 
 module.exports = (env: NodeJS.ProcessEnv, argv: Configuration) => {

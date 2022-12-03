@@ -1,7 +1,8 @@
 import { DateTime } from "luxon";
 
 // local dependencies
-import { weblogger } from "@doit/shared/utils";
+import { weblogger } from "../utils";
+import { initFirebase } from "../utils/initFirebase";
 
 // type
 import { AppAction, AppReducer, AppState, PageType } from "./types";
@@ -12,7 +13,7 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
   if (type === "addTodo") {
     state.todo.push(payload);
-    return { ...state, todo: state.todo, isInit: true };
+    return { ...state, todo: state.todo };
     //
   } else if (type === "deleteTodo") {
     const idx = state.todo.findIndex((x) => x.id === payload);
@@ -54,6 +55,11 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   } else if (type === "setTodoMenu") {
     return { ...state, todoMenu: payload };
     //
+  } else if (type === "setAuth") {
+    return { ...state, auth: payload };
+    //
+  } else if (type === "init") {
+    return payload;
   } else {
     throw new Error(`undefined action`);
   }
@@ -73,8 +79,13 @@ export const initialState: AppState = {
   pageType: PageType.ongoing,
   //   changeTodoForm: { formType: "close", id: null },
   changeTodoForm: { formType: "add", id: null },
+  auth: undefined,
 };
 
-export const initReducer = (): AppState => {
-  return initialState;
+export const initReducer = async (): Promise<AppState> => {
+  const { auth } = await initFirebase();
+  const eleAPI = window.electronAPI;
+  const todo = await eleAPI.send.getAllTodo();
+
+  return { ...initialState, todo: todo, auth: auth, isInit: true };
 };
