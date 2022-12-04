@@ -7,6 +7,8 @@ export type DateObj = {
   weekday: string;
 };
 
+export type Priority = 1 | 2 | 3 | 4 | 5;
+
 export class Todo {
   id: number;
   locale: string;
@@ -14,6 +16,7 @@ export class Todo {
   create_date: luxon.DateTime;
   finish_date: luxon.DateTime;
   finish_date_obj: DateObj;
+  priority: Priority;
   content: string;
   is_finish: boolean;
 
@@ -23,6 +26,7 @@ export class Todo {
     timezone = "Asia/Tokyo",
     create_date,
     finish_date,
+    priority = 1,
     content,
     is_finish = false,
   }: {
@@ -31,6 +35,7 @@ export class Todo {
     timezone?: string;
     create_date: luxon.DateTime;
     finish_date: luxon.DateTime;
+    priority?: Priority;
     content: string;
     is_finish?: boolean;
   }) {
@@ -45,6 +50,7 @@ export class Todo {
       day: finish_date.setZone(this.timezone).day,
       weekday: finish_date.setLocale(this.locale).weekdayShort,
     };
+    this.priority = priority;
     this.content = content;
     this.is_finish = is_finish;
   }

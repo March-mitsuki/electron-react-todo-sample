@@ -16,6 +16,7 @@ model Todo {
   timezone        String    @db.VarChar(16)
   finish_date     DateTime
   finish_date_obj Json
+  priority        Int       @default(1)
   content         String
   is_finish       Boolean
   created_at      DateTime  @default(now())
