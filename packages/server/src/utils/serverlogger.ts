@@ -27,23 +27,43 @@ enum ansiBack {
 
 type LogLevel = "err" | "warn" | "info" | "nomal";
 
+type LoggerArg = {
+  prefix: string;
+  filename: string;
+  writeOnly?: boolean;
+  msgs: unknown[];
+};
+
 const luxonFmt = "yyyy'-'LL'-'dd HH'-'mm'-'ss Z";
 
+const replacer = () => {
+  const seen = new WeakSet();
+  return (_: unknown, v: unknown) => {
+    if (typeof v === "object" && v != null) {
+      if (seen.has(v)) {
+        return;
+      }
+      seen.add(v);
+    }
+    return v;
+  };
+};
+
 const logger = (backColor: ansiBack, level: LogLevel) => {
-  return (prefix: string, filename: string, ...args: unknown[]) => {
+  return ({ prefix, filename, writeOnly = false, msgs }: LoggerArg) => {
     let filePath = "no/filename/input";
-    // 判断第二个引数是否为path, 若不是则交给args作为普通信息处理
+    // 判断第二个引数是否为path, 若不是则交给msgs作为普通信息处理
     const testFilename = filename.match(/(.*\/.*\..*)\s?/);
     if (testFilename) {
       filePath = path.relative(process.cwd(), testFilename[1]);
     } else {
-      args = [filename, ...args];
+      msgs = [filename, ...msgs];
     }
 
-    const parsedArgs = args
+    const parsedmsgs = msgs
       .map((elem) => {
         if (elem instanceof Object) {
-          return JSON.stringify(elem, null, 2);
+          return JSON.stringify(elem, replacer(), 2);
         } else if (typeof elem === "string") {
           return elem;
         } else {
@@ -52,14 +72,16 @@ const logger = (backColor: ansiBack, level: LogLevel) => {
       })
       .join(` `);
 
-    console.log(
-      `${backColor} ${prefix} ${ansiFont.reset}` +
-        ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
-          ansiFont.reset
-        }` +
-        ` ${parsedArgs}` +
-        ` ${ansiFont.underLine}${filePath}${ansiFont.reset}`,
-    );
+    if (!writeOnly) {
+      console.log(
+        `${backColor} ${prefix} ${ansiFont.reset}` +
+          ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
+            ansiFont.reset
+          }` +
+          ` ${parsedmsgs}` +
+          ` ${ansiFont.underLine}${filePath}${ansiFont.reset}`,
+      );
+    }
 
     if (process.env.DOYA_ROOT) {
       let logFilePath = "logs/server.log";
@@ -78,7 +100,7 @@ const logger = (backColor: ansiBack, level: LogLevel) => {
           break;
       }
 
-      const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedArgs}\n`;
+      const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedmsgs}\n`;
 
       writeFile(path.resolve(process.env.DOYA_ROOT, logFilePath), writeLogData, {
         flag: "a",
