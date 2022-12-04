@@ -5,3 +5,4 @@ export { default as MenuBar } from "./menu-bar";
 export { default as TodoList } from "./list";
 export { default as HeadBtn } from "./head-btn";
 export { default as Loading } from "./loading";
+export { default as BackGroundCanvas } from "./back-canvas";

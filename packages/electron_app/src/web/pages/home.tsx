@@ -1,13 +1,21 @@
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { CtxMenu, TodoForm, MenuBar, FootBtn, TodoList, HeadBtn, Loading } from "../components";
+import {
+  CtxMenu,
+  TodoForm,
+  MenuBar,
+  FootBtn,
+  TodoList,
+  HeadBtn,
+  Loading,
+  BackGroundCanvas,
+} from "../components";
 import { weblogger } from "../utils";
 
 const Home: React.FC = () => {
   const { state } = useAppCtx();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (!state.isInit) {
@@ -20,37 +28,9 @@ const Home: React.FC = () => {
     }
   }, [state.isInit]); // eslint-disable-line
 
-  useEffect(() => {
-    if (!canvasRef.current) {
-      return;
-    }
-    const canvasCtx = canvasRef.current.getContext("2d");
-    if (!canvasCtx) {
-      return;
-    }
-    canvasCtx.strokeStyle = "#9d9986";
-    canvasCtx.beginPath();
-    for (let w = 5; w < window.screen.height; w += 5) {
-      // 竖线
-      canvasCtx.moveTo(w, 0);
-      canvasCtx.lineTo(w, window.screen.height);
-    }
-    for (let h = 5; h < window.screen.width; h += 5) {
-      // 横线
-      canvasCtx.moveTo(0, h);
-      canvasCtx.lineTo(window.screen.width, h);
-    }
-    canvasCtx.stroke();
-  }, []); // eslint-disable-line
-
   return (
     <div className="font-semibold bg-NRyellow/80">
-      <canvas
-        ref={canvasRef}
-        width={300}
-        height={300}
-        className="absolute -z-10 h-screen w-screen"
-      ></canvas>
+      <BackGroundCanvas></BackGroundCanvas>
       {state.isInit ? (
         <>
           {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}

@@ -1,14 +1,17 @@
-import { weblogger } from "../utils";
 import { signInWithEmailAndPassword } from "firebase/auth";
-
 import { FormEventHandler, useState } from "react";
 import { Link } from "react-router-dom";
+
+// local dependencies
 import { useAppCtx } from "../store/store";
+import { BackGroundCanvas } from "../components";
+import { weblogger } from "../utils";
 
 const Signin: React.FC = () => {
   const { state } = useAppCtx();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!state.auth) {
@@ -24,7 +27,8 @@ const Signin: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
+      <BackGroundCanvas></BackGroundCanvas>
       <form onSubmit={handleSubmit}>
         <label>
           <div>邮箱</div>
@@ -46,10 +50,8 @@ const Signin: React.FC = () => {
         </label>
         <button type="submit">Sign In</button>
       </form>
-      <button onClick={() => weblogger.info("now herf", state.auth?.currentUser)}>SEE</button>
-      <Link to="signup">我也想为人类出一份力</Link>
-      <Link to="/">{" back home"}</Link>
-    </>
+      <Link to="signup">{"加入YoRHa部队(注册)"}</Link>
+    </div>
   );
 };
 
