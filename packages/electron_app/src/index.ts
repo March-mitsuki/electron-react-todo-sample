@@ -1,10 +1,9 @@
 import path from "path";
 import { BrowserWindow, app, ipcMain } from "electron";
-import { DateTime } from "luxon";
-// import got from "got";
+import got from "got";
 
 // type
-import { ToDoit } from "@doit/shared";
+import { TodoGetAllResType } from "@doit/shared/interfaces/api/todo";
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -27,32 +26,10 @@ app
   .whenReady()
   .then(() => {
     ipcMain.handle("get:allTodo", async () => {
-      // const data = (await got.get("https://pokeapi.co/api/v2/pokemon/ditto")).body;
-      const sleep = new Promise<ToDoit.Todo[]>((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            const todoList = [
-              new ToDoit.Todo({
-                id: 1,
-                content: "项目1",
-                create_date: DateTime.now(),
-                finish_date: DateTime.now(),
-              }),
-              new ToDoit.Todo({
-                id: 2,
-                content: "ミッション2",
-                create_date: DateTime.now(),
-                finish_date: DateTime.now(),
-              }),
-            ];
-            resolve(todoList);
-          } catch (err) {
-            reject(err);
-          }
-        }, 1000);
-      });
-      const data = await sleep;
-      return data;
+      const data = (await (
+        await got.get("http://127.0.0.1:3194/todo/getall", { responseType: "json" })
+      ).body) as TodoGetAllResType;
+      return data.todos;
     });
 
     const mainWindow = createWindow();

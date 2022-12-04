@@ -1,8 +1,6 @@
 import express from "express";
+import { getAllTodosDummy } from "../controllers/todo";
 
 export const todoRouter = express.Router();
 
-todoRouter.get("/getall", (_, res) => {
-  res.json({ msg: "all todos called" });
-  return;
-});
+todoRouter.get("/getall", getAllTodosDummy);
