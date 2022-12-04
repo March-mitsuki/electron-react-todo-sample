@@ -5,9 +5,17 @@ import type { FirebaseApp } from "@firebase/app";
 import type { Auth } from "firebase/auth";
 
 // init firebase app
+const key = process.env.WEB_APIKEY;
+const domain = process.env.WEB_AUTH_DOMAIN;
+if (!key) {
+  throw new Error("can not initialze firebase app, because apiKey is undefined");
+}
+if (!domain) {
+  throw new Error("can not initialze firebase app, because authDomain is undefined");
+}
 const config = {
-  apiKey: "AIzaSyDik441PceFFsvEbqXlODPKS9QtTsZc1Zc",
-  authDomain: "gcp-leaning-01-web.firebaseapp.com",
+  apiKey: key,
+  authDomain: domain,
 };
 
 export const initFirebase = () => {

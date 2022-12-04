@@ -1,10 +1,23 @@
 /** エディタで補完を効かせるために型定義をインポート */
-import { Configuration } from "webpack";
+import webpack, { Configuration } from "webpack";
 
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import path from "path";
+import * as dotenv from "dotenv";
+
+const _env = dotenv.config({ path: path.resolve(process.cwd(), ".env.local") }).parsed;
+const env: { [name: string]: string } = {};
+// only exposed variable with WEB_ prefix
+if (_env) {
+  const regex = /^WEB_/;
+  for (const key in _env) {
+    if (regex.test(key)) {
+      env[key] = _env[key];
+    }
+  }
+}
 
 // 共通設定
 const common: Configuration = {
@@ -98,6 +111,9 @@ const renderer: Configuration = {
     new HtmlWebpackPlugin({
       // テンプレート
       template: path.resolve(__dirname, "src/web/index.html"),
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(env),
     }),
   ],
   resolve: {

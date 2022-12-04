@@ -3,7 +3,7 @@ import { prisma, prismaMiddleware } from "./db";
 import { startServer } from "./server";
 
 async function main() {
-  await initDotenv();
+  await initDotenv(".env.local");
 
   prisma.$use(prismaMiddleware.softDelete);
 

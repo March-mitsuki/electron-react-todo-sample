@@ -14,6 +14,8 @@ declare global {
     interface ProcessEnv {
       DOYA_ROOT: string | undefined;
       DOYA_SERVER_PORT: string | undefined;
+      WEB_APIKEY: string | undefined;
+      WEB_AUTH_DOMAIN: string | undefined;
     }
   }
 }
