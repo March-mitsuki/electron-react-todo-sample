@@ -16,6 +16,9 @@ const BackGroundCanvas: React.FC = () => {
       },
       { signal: resizeController.signal },
     );
+  }, []);
+
+  useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
@@ -24,11 +27,6 @@ const BackGroundCanvas: React.FC = () => {
       return;
     }
     drawBackground(canvasCtx);
-
-    // clean up resize event listener
-    return () => {
-      resizeController.abort();
-    };
   }, [canvasWidth, canvasHeight]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);

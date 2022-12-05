@@ -22,7 +22,7 @@ const HeadBtn: React.FC = () => {
     <div
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      className=" text-NRyellow select-none text-sm "
+      className=" electron-no-drag text-NRyellow select-none text-sm "
     >
       {isHover ? (
         <button onClick={handleSignOut} className=" underline ">
