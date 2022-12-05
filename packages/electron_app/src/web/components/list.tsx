@@ -1,8 +1,11 @@
+import { sortBy } from "sort-by-typescript";
+
 // local dependencies
 import { useAppCtx } from "../store/store";
+import { priorityToString } from "@doit/shared/interfaces/todo_type";
 
 // type
-import type { Todo } from "@doit/shared/interfaces/todo_type";
+import type { Todo, Priority } from "@doit/shared/interfaces/todo_type";
 import { DateTime } from "luxon";
 import { PageType } from "../store/types";
 
@@ -20,6 +23,22 @@ const TodoList: React.FC = () => {
         y: e.clientY,
       },
     });
+  };
+
+  const priorityNode = (p: Priority) => {
+    if (p === 2) {
+      return (
+        <div className=" absolute left-[3.3px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
+          {priorityToString(p)}
+        </div>
+      );
+    } else {
+      return (
+        <div className=" absolute left-[3.5px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
+          {priorityToString(p)}
+        </div>
+      );
+    }
   };
 
   const listNode = (elem: Todo, idx: number) => {
@@ -55,12 +74,13 @@ const TodoList: React.FC = () => {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={3.5}
+              strokeWidth={3}
               stroke="currentColor"
               className="w-[17px] h-[17px] -left-[1px] text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
+            {priorityNode(elem.priority)}
             <div className="text-NRblack truncate w-[calc(100vw/3)] ">{elem.content}</div>
           </div>
         )}
@@ -79,7 +99,7 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      {state.todo.map((elem, idx) => {
+      {state.todo.sort(sortBy("priority", "finish_date")).map((elem, idx) => {
         console.log("map render once");
         if (state.pageType === PageType.ongoing) {
           if (!elem.is_finish) {
