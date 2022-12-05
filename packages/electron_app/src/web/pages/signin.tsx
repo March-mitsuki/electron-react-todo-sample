@@ -21,7 +21,7 @@ const Signin: React.FC = () => {
     signInWithEmailAndPassword(state.auth, email, password)
       .then(() => {
         weblogger.nomal("signin", "user signin successfully");
-        location.href = "";
+        location.href = "#/";
       })
       .catch((err) => weblogger.err("signin", err));
   };
