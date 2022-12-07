@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { BackGroundCanvas } from "../components";
+import { BackGroundCanvas, HeadBtn } from "../components";
 import { weblogger } from "../utils";
 
 const Signin: React.FC = () => {
@@ -29,6 +29,9 @@ const Signin: React.FC = () => {
   return (
     <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
       <BackGroundCanvas></BackGroundCanvas>
+      <div className="h-6 bg-NRblack flex justify-center items-center">
+        <HeadBtn displayOnly={true}></HeadBtn>
+      </div>
       <form onSubmit={handleSubmit}>
         <label>
           <div>邮箱</div>
