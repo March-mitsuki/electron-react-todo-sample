@@ -12,6 +12,7 @@ datasource db {
 
 model Todo {
   id              Int       @id @default(autoincrement())
+  uid             String    @db.VarChar(64) // firebase authentication uid
   local           String    @db.VarChar(8)
   timezone        String    @db.VarChar(16)
   finish_date     DateTime
@@ -24,4 +25,9 @@ model Todo {
   deleted_at      DateTime?
 
   @@index([deleted_at])
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  firebase_uid String @db.VarChar(64)
 }
