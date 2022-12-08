@@ -1,9 +1,10 @@
 import { initDotenv } from "./utils";
 import { prisma, prismaMiddleware } from "./db";
-import { startServer } from "./server";
+import { startServer, initFirebaseApp } from "./server";
 
 async function main() {
   await initDotenv(".env.local");
+  await initFirebaseApp();
 
   prisma.$use(prismaMiddleware.softDelete);
 

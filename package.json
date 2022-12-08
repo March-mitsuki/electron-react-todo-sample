@@ -2,7 +2,6 @@
   "name": "doit",
   "version": "1.0.0",
   "description": "a buitiful, customizeable, cross platform destop todo widget",
-  "main": "index.js",
   "author": "mitsuki",
   "license": "MIT",
   "private": true,

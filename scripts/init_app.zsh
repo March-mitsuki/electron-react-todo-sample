@@ -28,6 +28,7 @@ DB_HOST='localhost'
 DB_PORT='3306'
 DB_NAME='youdoya'
 DB_URL="${DB_TYPE}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+DOYA_FIREBASE_SECRET_JSON=''
 
 # electron .env variable
 WEB_APIKEY=''
@@ -103,6 +104,26 @@ set_prisma_url() {
   done
 }
 
+set_server_firebase_secret_json() {
+  echo "${INFO_HEAD} please input the firebase secret credential json file name (include file extention):"
+  vared -r '(example: my_secret.json) ' DOYA_FIREBASE_SECRET_JSON
+  echo "absolute path to your secret file will be: ($(pwd)/packages/server/${DOYA_FIREBASE_SECRET_JSON}), is OK? [y/n]: "
+  while read "SERVER_FIREBASE_OK"; do
+    case $SERVER_FIREBASE_OK in
+    [Yy]) {
+      return 0
+    } ;;
+    [Nn]) {
+      echo "${WARN_HEAD} you say no, please check the filename and run this script again."
+      return 1
+    } ;;
+    *) {
+      echo "please answer with Yy or Nn"
+    } ;;
+    esac
+  done
+}
+
 set_electron_firebase_apikey() {
   echo "${INFO_HEAD} please input expose firebase borwser apikey:"
   vared WEB_APIKEY
@@ -145,14 +166,22 @@ init_server() {
     echo "${ERR_HEAD} set prisma url error"
     return 1
   fi
+  if ! set_server_firebase_secret_json; then
+    echo "${ERR_HEAD} set server firebase secret json error"
+    return 1
+  fi
 
   # write value into .env file
   if ! echo "DOYA_SERVER_PORT=${DOYA_SERVER_PORT}" >>"$SERVER_PATH"; then
     echo "${ERR_HEAD} write server port to .env file error"
     return 1
   fi
-  if ! echo "DOYA_DB_URL=$DB_URL" >>"${SERVER_PATH}"; then
+  if ! echo "DOYA_DB_URL=${DB_URL}" >>"${SERVER_PATH}"; then
     echo "${ERR_HEAD} write db url to .env file error."
+    return 1
+  fi
+  if ! echo "DOYA_FIREBASE_SECRET_JSON=${DOYA_FIREBASE_SECRET_JSON}" >>"${SERVER_PATH}"; then
+    echo "${ERR_HEAD} write server filebase secret json to .env file error."
     return 1
   fi
 

@@ -2,39 +2,12 @@ import { writeFile } from "fs/promises";
 import { DateTime } from "luxon";
 import path from "path";
 
-enum ansiFont {
-  black = "\x1b[30m",
-  red = "\x1b[31m",
-  green = "\x1b[32m",
-  yellow = "\x1b[33m",
-  blue = "\x1b[34m",
-  white = "\x1b[37m",
-  brightBlack = "\x1b[90m",
-  fontBold = "\x1b[1m",
-  underLine = "\x1b[4m",
-  reset = "\x1b[0m",
-}
-
-enum ansiBack {
-  black = "\x1b[40m",
-  red = "\x1b[41m",
-  green = "\x1b[42m",
-  yellow = "\x1b[43m",
-  blue = "\x1b[44m",
-  white = "\x1b[47m",
-  brightBlack = "\x1b[100m",
-}
+import { ansiFont, ansiBack } from "./ansicode";
 
 type LogLevel = "err" | "warn" | "info" | "nomal";
+type LoggerMode = "all" | "console" | "write";
 
-type LoggerArg = {
-  prefix: string;
-  filename: string;
-  writeOnly?: boolean;
-  msgs: unknown[];
-};
-
-const luxonFmt = "yyyy'-'LL'-'dd HH'-'mm'-'ss Z";
+const logDateFmt = "yyyy'-'LL'-'dd HH'-'mm'-'ss Z";
 
 const replacer = () => {
   const seen = new WeakSet();
@@ -50,9 +23,9 @@ const replacer = () => {
 };
 
 const logger = (backColor: ansiBack, level: LogLevel) => {
-  return ({ prefix, filename, writeOnly = false, msgs }: LoggerArg) => {
-    let filePath = "no/filename/input";
+  return (prefix: string, filename: string, mode: LoggerMode, ...msgs: unknown[]) => {
     // 判断第二个引数是否为path, 若不是则交给msgs作为普通信息处理
+    let filePath = "";
     const testFilename = filename.match(/(.*\/.*\..*)\s?/);
     if (testFilename) {
       filePath = path.relative(process.cwd(), testFilename[1]);
@@ -72,10 +45,10 @@ const logger = (backColor: ansiBack, level: LogLevel) => {
       })
       .join(` `);
 
-    if (!writeOnly) {
+    if (mode === "all" || mode === "console") {
       console.log(
         `${backColor} ${prefix} ${ansiFont.reset}` +
-          ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(luxonFmt)}${
+          ` ${ansiFont.fontBold}${ansiFont.brightBlack}${DateTime.now().toFormat(logDateFmt)}${
             ansiFont.reset
           }` +
           ` ${parsedmsgs}` +
@@ -83,37 +56,129 @@ const logger = (backColor: ansiBack, level: LogLevel) => {
       );
     }
 
-    if (process.env.DOYA_ROOT) {
-      let logFilePath = "logs/server.log";
-      switch (level) {
-        case "err":
-          logFilePath = "logs/server_err.log";
-          break;
-        case "warn":
-          logFilePath = "logs/server_warn.log";
-          break;
-        case "nomal":
-          logFilePath = "logs/server_nomal.log";
-          break;
-        case "info":
-          logFilePath = "logs/server_info.log";
-          break;
+    if (mode === "all" || mode === "write") {
+      if (process.env.DOYA_ROOT) {
+        const filenameDate = DateTime.now().toFormat("yyyy'-'LL'-'dd");
+        let logFilePath = `logs/${filenameDate}_server.log`;
+        switch (level) {
+          case "err":
+            logFilePath = `logs/${filenameDate}_server_err.log`;
+            break;
+          case "warn":
+            logFilePath = `logs/${filenameDate}_server_warn.log`;
+            break;
+          case "nomal":
+            logFilePath = `logs/${filenameDate}_server_nomal.log`;
+            break;
+          case "info":
+            logFilePath = `logs/${filenameDate}_server_info.log`;
+            break;
+        }
+
+        const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(logDateFmt)}] ${parsedmsgs}\n`;
+
+        writeFile(path.resolve(process.env.DOYA_ROOT, logFilePath), writeLogData, {
+          flag: "a",
+        }).catch((err) => {
+          console.log(`[${ansiFont.red}writeLogToFile${ansiFont.reset}]`, err);
+        });
       }
-
-      const writeLogData = `[${prefix}]-[${DateTime.now().toFormat(luxonFmt)}] ${parsedmsgs}\n`;
-
-      writeFile(path.resolve(process.env.DOYA_ROOT, logFilePath), writeLogData, {
-        flag: "a",
-      }).catch((err) => {
-        console.log(`[${ansiFont.red}writeLogToFile${ansiFont.reset}]`, err);
-      });
     }
 
     return;
   };
 };
 
-export const err = logger(ansiBack.red, "err");
-export const warn = logger(ansiBack.yellow, "warn");
-export const nomal = logger(ansiBack.green, "nomal");
-export const info = logger(ansiBack.blue, "info");
+export const _err = logger(ansiBack.red, "err");
+export const _warn = logger(ansiBack.yellow, "warn");
+export const _nomal = logger(ansiBack.green, "nomal");
+export const _info = logger(ansiBack.blue, "info");
+
+// 再套一层 warpper 使得函数扁平化
+export function err(prefix: string, ...args: unknown[]): void;
+export function err(prefix: string, filename: string, ...args: unknown[]): void;
+export function err(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _err(prefix, filename, "all", args.slice(2));
+}
+export function errWrite(prefix: string, filename: string, ...args: unknown[]): void;
+export function errWrite(prefix: string, ...args: unknown[]): void;
+export function errWrite(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _err(prefix, filename, "write", args.slice(2));
+}
+export function errConsole(prefix: string, filename: string, ...args: unknown[]): void;
+export function errConsole(prefix: string, ...args: unknown[]): void;
+export function errConsole(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _err(prefix, filename, "console", args.slice(2));
+}
+
+export function warn(prefix: string, filename: string, ...args: unknown[]): void;
+export function warn(prefix: string, ...args: unknown[]): void;
+export function warn(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _warn(prefix, filename, "all", args.slice(2));
+}
+export function warnWrite(prefix: string, filename: string, ...args: unknown[]): void;
+export function warnWrite(prefix: string, ...args: unknown[]): void;
+export function warnWrite(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _warn(prefix, filename, "write", args.slice(2));
+}
+export function warnConsole(prefix: string, filename: string, ...args: unknown[]): void;
+export function warnConsole(prefix: string, ...args: unknown[]): void;
+export function warnConsole(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _warn(prefix, filename, "console", args.slice(2));
+}
+
+export function nomal(prefix: string, filename: string, ...args: unknown[]): void;
+export function nomal(prefix: string, ...args: unknown[]): void;
+export function nomal(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _nomal(prefix, filename, "all", args.slice(2));
+}
+export function nomalWrite(prefix: string, filename: string, ...args: unknown[]): void;
+export function nomalWrite(prefix: string, ...args: unknown[]): void;
+export function nomalWrite(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _nomal(prefix, filename, "write", args.slice(2));
+}
+export function nomalConsole(prefix: string, filename: string, ...args: unknown[]): void;
+export function nomalConsole(prefix: string, ...args: unknown[]): void;
+export function nomalConsole(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _nomal(prefix, filename, "console", args.slice(2));
+}
+
+export function info(prefix: string, filename: string, ...args: unknown[]): void;
+export function info(prefix: string, ...args: unknown[]): void;
+export function info(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _info(prefix, filename, "all", args.slice(2));
+}
+export function infoWrite(prefix: string, filename: string, ...args: unknown[]): void;
+export function infoWrite(prefix: string, ...args: unknown[]): void;
+export function infoWrite(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _info(prefix, filename, "write", args.slice(2));
+}
+export function infoConsole(prefix: string, filename: string, ...args: unknown[]): void;
+export function infoConsole(prefix: string, ...args: unknown[]): void;
+export function infoConsole(...args: unknown[]) {
+  const prefix = args[0] as string;
+  const filename = args[1] as string;
+  return _info(prefix, filename, "console", args.slice(2));
+}

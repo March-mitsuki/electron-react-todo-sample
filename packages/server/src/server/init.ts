@@ -1,8 +1,38 @@
 import http from "http";
 import express from "express";
 
-import { serverlogger } from "../utils";
+import { serverlogger, ansicode } from "../utils";
 import { todoRouter } from "./routers";
+
+import type { RequestHandler } from "express";
+
+type MethodColor = ansicode.ansiBack | ansicode.ansiFont;
+type ApiLoggerMiddlewareOption = {
+  methodColor: MethodColor;
+};
+
+const apiLoggerMiddleware = (option?: Partial<ApiLoggerMiddlewareOption>): RequestHandler => {
+  let methodColor: MethodColor = ansicode.ansiFont.yellow;
+  if (option?.methodColor) {
+    methodColor = option?.methodColor;
+  }
+  return (req, _, next) => {
+    serverlogger.infoConsole(
+      "api",
+      `${methodColor}${req.method}${ansicode.ansiFont.reset}`,
+      req.url,
+      "ip:",
+      req.ip,
+      "hostname:",
+      req.hostname,
+    );
+    // To ensure that ansi code is not written to the log file
+    serverlogger.infoWrite("api", req.method, req.url, "ip:", req.ip, "hostname:", req.hostname);
+    next();
+
+    return;
+  };
+};
 
 const startServer = (PORT: number) => {
   const app = express();
@@ -12,15 +42,10 @@ const startServer = (PORT: number) => {
       extended: true,
     }),
   );
+  app.use(apiLoggerMiddleware());
   const server = http.createServer(app);
 
   app.get("/ping", (req, res) => {
-    serverlogger.nomal({
-      prefix: "api",
-      filename: __filename,
-      writeOnly: true,
-      msgs: ["/ping called with req:", req],
-    });
     res.json({
       pong: "server is running",
     });
@@ -29,11 +54,7 @@ const startServer = (PORT: number) => {
   app.use("/todo", todoRouter);
 
   server.listen(PORT, () => {
-    serverlogger.nomal({
-      prefix: "server",
-      filename: __filename,
-      msgs: ["server is runnning on port", PORT],
-    });
+    serverlogger.nomal("server", __filename, "server is running on port", PORT);
   });
 };
 

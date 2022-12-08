@@ -1,6 +1,17 @@
 node_modules/
 dist/
+
+# docker mounted folder
 docker/
+
+# macOS ds file
 *.DS_Store
+
+# local file example: .env.local
 *.local
+
+# log file
 *.log
+
+# key word secret in filename
+*secret*

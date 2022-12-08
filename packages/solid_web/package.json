@@ -2,7 +2,7 @@
   "name": "@doit/solid_web",
   "version": "1.0.0",
   "description": "doit app electron desktop app",
-  "main": "index.js",
+  "main": "index.html",
   "license": "MIT",
   "private": true,
   "scripts": {
