@@ -75,11 +75,12 @@ const TodoForm: React.FC = () => {
       return;
     }
     const newTodo = new ToDoit.Todo({
-      id: Date.now(),
+      id: Date.now().toString(),
       create_date: DateTime.now(),
       finish_date: finish_date,
       content: todoIptData.todo,
     });
+
     if (state.changeTodoForm.formType === "add") {
       dispatch({ type: "addTodo", payload: newTodo });
       setTodoIptData({

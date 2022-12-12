@@ -17,7 +17,7 @@ const priorityStr = {
 };
 
 export class Todo {
-  id: number;
+  id: string;
   locale: string;
   timezone: string;
   create_date: luxon.DateTime;
@@ -37,7 +37,7 @@ export class Todo {
     content,
     is_finish = false,
   }: {
-    id: number;
+    id: string;
     locale?: string;
     timezone?: string;
     create_date: luxon.DateTime;

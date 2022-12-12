@@ -11,6 +11,8 @@ import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
 import { weblogger } from "./utils";
+import { collection, getDocs } from "firebase/firestore";
+import { todoConverter } from "./utils/firestore/converter";
 
 const router = createHashRouter([
   {
@@ -52,11 +54,24 @@ const App = () => {
     appState.auth.onAuthStateChanged((user) => {
       if (user) {
         weblogger.info("App", "user sign in successfully");
+        if (!appState.fdb) {
+          weblogger.err("on user signin", "fdb is undefined");
+          return;
+        }
+        getDocs(collection(appState.fdb, "todos", "v1", user.uid))
+          .then((snapshot) => {
+            const todos = todoConverter.fromFirestore(snapshot);
+            appDispatch({ type: "setTodo", payload: todos });
+          })
+          .catch((err) => {
+            weblogger.err("on user signin", err);
+          });
+        location.href = "#/";
       } else {
         location.href = "#/signin";
       }
     });
-  }, [appState.auth]);
+  }, [appState.auth]); // eslint-disable-line
 
   return (
     <appCtx.Provider value={ctxProviderState}>

@@ -2,6 +2,7 @@ import { ToDoit } from "@doit/shared";
 import { Dispatch } from "react";
 
 import type { Auth } from "firebase/auth";
+import type { Firestore } from "firebase/firestore";
 
 export enum PageType {
   ongoing = 1,
@@ -9,14 +10,16 @@ export enum PageType {
   all = 3,
 }
 
-export type TodoMeneType = { id: number; x: number; y: number };
+type TodoId = ToDoit.Todo["id"];
+
+export type TodoMeneType = { id: TodoId; x: number; y: number };
 
 // close 和 add 用不到 id 所以 null 就行
 export type TodoFormTypes =
   | { formType: "close" | "add"; id: null }
-  | { formType: "edit"; id: number };
+  | { formType: "edit"; id: TodoId };
 
-export type EditTodoData = { id: number; todo: string; date: string };
+export type EditTodoData = { id: TodoId; todo: string; date: string };
 
 export type AppState = {
   todo: ToDoit.Todo[];
@@ -25,6 +28,7 @@ export type AppState = {
   pageType: PageType;
   changeTodoForm: TodoFormTypes;
   auth: Auth | undefined;
+  fdb: Firestore | undefined;
 };
 
 export type AppActionType<T, P> = {
@@ -34,10 +38,10 @@ export type AppActionType<T, P> = {
 
 export type AppAction =
   | AppActionType<"addTodo", ToDoit.Todo>
-  | AppActionType<"deleteTodo", number>
+  | AppActionType<"deleteTodo", TodoId>
   | AppActionType<"setTodo", ToDoit.Todo[]>
   | AppActionType<"editTodo", EditTodoData>
-  | AppActionType<"toggleFinish", { id: number; nowFinish: boolean }>
+  | AppActionType<"toggleFinish", { id: TodoId; nowFinish: boolean }>
   | AppActionType<"changePageType", PageType>
   | AppActionType<"changeTodoForm", TodoFormTypes>
   | AppActionType<"setTodoMenu", TodoMeneType>

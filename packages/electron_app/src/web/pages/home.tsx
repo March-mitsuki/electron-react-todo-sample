@@ -33,7 +33,7 @@ const Home: React.FC = () => {
       <BackGroundCanvas></BackGroundCanvas>
       {state.isInit ? (
         <>
-          {state.todoMenu.id > 0 && <CtxMenu></CtxMenu>}
+          {state.todoMenu.id !== "" && <CtxMenu></CtxMenu>}
           <div className="h-6 bg-NRblack flex justify-center items-center">
             <HeadBtn></HeadBtn>
           </div>

@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { addDoc, collection } from "firebase/firestore";
 
 // local dependencies
 import { weblogger } from "../utils";
@@ -8,11 +9,26 @@ import { initFirebase } from "../utils/initFirebase";
 import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
 import { dateToObj } from "@doit/shared/utils/date";
+import { todoConverter } from "../utils/firestore/converter";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
   if (type === "addTodo") {
-    state.todo.push(payload);
+    // state.todo.push(payload);
+    if (!state.fdb) {
+      weblogger.err("reducer - addTodo", "fdb is undefined");
+      return state;
+    }
+    if (!state.auth?.currentUser) {
+      weblogger.err("reducer - addTodo", "auth is undefined");
+      return state;
+    }
+    const addData = todoConverter.toFirestore(payload);
+    addDoc(collection(state.fdb, "todos", "v1", state.auth.currentUser.uid), addData)
+      .then(() => {
+        weblogger.nomal("reducer - addTodo", "doc write successfully");
+      })
+      .catch((err) => weblogger.err("reducer - addTodo", "firebase add doc err:", err));
     return { ...state, todo: state.todo };
     //
   } else if (type === "deleteTodo") {
@@ -68,24 +84,25 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
 export const initialState: AppState = {
   todo: [
     new ToDoit.Todo({
-      id: -1,
+      id: "-1",
       content: "正在连接服务器...",
       create_date: DateTime.now(),
       finish_date: DateTime.now(),
     }),
   ],
   isInit: false,
-  todoMenu: { id: -1, x: 0, y: 0 },
+  todoMenu: { id: "", x: 0, y: 0 },
   pageType: PageType.ongoing,
   //   changeTodoForm: { formType: "close", id: null },
   changeTodoForm: { formType: "add", id: null },
   auth: undefined,
+  fdb: undefined,
 };
 
 export const initReducer = async (): Promise<AppState> => {
-  const { auth } = await initFirebase();
   const eleAPI = window.electronAPI;
-  const todo = await eleAPI.send.getAllTodo();
+  const mode = await eleAPI.send.getAppMode();
+  const { auth, fdb } = await initFirebase(mode);
 
-  return { ...initialState, todo: todo, auth: auth, isInit: true };
+  return { ...initialState, isInit: true, auth: auth, fdb: fdb };
 };

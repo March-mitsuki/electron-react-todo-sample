@@ -11,7 +11,7 @@ const api: costomeElectronAPI = {
   },
   send: {
     close: () => ipcRenderer.send("close-window"),
-    getAllTodo: () => ipcRenderer.invoke("get:allTodo"),
+    getAppMode: () => ipcRenderer.invoke("get:appMode"),
   },
 };
 

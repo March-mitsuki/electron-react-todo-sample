@@ -36,6 +36,10 @@ DOYA_FIREBASE_SECRET_JSON=''
 # electron .env variable
 WEB_APIKEY=''
 WEB_AUTH_DOMAIN=''
+WEB_PROJECT_ID=''
+WEB_STORAGE_BUCKET=''
+WEB_MSG_SENDER_ID=''
+WEB_APP_ID=''
 
 create_dotenv() {
   if [ $# -ne 1 ]; then
@@ -153,10 +157,48 @@ set_electron_firebase_apikey() {
   done
 }
 
-set_electron_auth_domain() {
+set_electron_firebase_config() {
+  echo "${NOMAL_HEAD} will start setting firebase config, if you don't know what is this, please check your firebase project setting."
+
   echo "${INFO_HEAD} please input firebase authentication domain:"
   vared WEB_AUTH_DOMAIN
-  echo "${NOMAL_HEAD} your electron app will use this domain to authenticate user: (${WEB_AUTH_DOMAIN})"
+
+  echo "${INFO_HEAD} please input firebase project id:"
+  vared WEB_PROJECT_ID
+
+  echo "${INFO_HEAD} please input firebase storage bucket:"
+  vared WEB_STORAGE_BUCKET
+
+  echo "${INFO_HEAD} please input firebase message sender id:"
+  vared WEB_MSG_SENDER_ID
+
+  echo "${INFO_HEAD} please input firebase app id:"
+  vared WEB_APP_ID
+
+  echo "${NOMAL_HEAD} your electron app will use follow setting to init firebase:"
+  echo "{"
+  echo "  authDomain: ${WEB_AUTH_DOMAIN}"
+  echo "  projectId: ${WEB_PROJECT_ID}"
+  echo "  storageBucket: ${WEB_STORAGE_BUCKET}"
+  echo "  messageSenderId: ${WEB_MSG_SENDER_ID}"
+  echo "  appId: ${WEB_APP_ID}"
+  echo "}"
+
+  echo "is OK? [y/n]"
+  while read "FIREBASE_OK"; do
+    case $FIREBASE_OK in
+    [Yy]) {
+      return 0
+    } ;;
+    [Nn]) {
+      echo "${WARN_HEAD} you say no, please check the your firebaes config and run this script again."
+      return 1
+    } ;;
+    *) {
+      echo "please answer with Yy or Nn"
+    } ;;
+    esac
+  done
 }
 
 init_server() {
@@ -207,8 +249,8 @@ init_electron() {
     echo "${ERR_HEAD} set electron firebase apikey error"
     return 1
   fi
-  if ! set_electron_auth_domain; then
-    echo "${ERR_HEAD} set electron auth domain error"
+  if ! set_electron_firebase_config; then
+    echo "${ERR_HEAD} set electron fireabse config error"
     return 1
   fi
 
@@ -219,6 +261,22 @@ init_electron() {
   fi
   if ! echo "WEB_AUTH_DOMAIN=${WEB_AUTH_DOMAIN}" >>"${ELECTRON_PATH}"; then
     echo "${ERR_HEAD} write electron auth domain to .env file error"
+    return 1
+  fi
+  if ! echo "WEB_PROJECT_ID=${WEB_PROJECT_ID}" >>"${ELECTRON_PATH}"; then
+    echo "${ERR_HEAD} write electron project id to .env file error"
+    return 1
+  fi
+  if ! echo "WEB_STORAGE_BUCKET=${WEB_STORAGE_BUCKET}" >>"${ELECTRON_PATH}"; then
+    echo "${ERR_HEAD} write electron storage bucket to .env file error"
+    return 1
+  fi
+  if ! echo "WEB_MSG_SENDER_ID=${WEB_MSG_SENDER_ID}" >>"${ELECTRON_PATH}"; then
+    echo "${ERR_HEAD} write electron message sender id to .env file error"
+    return 1
+  fi
+  if ! echo "WEB_APP_ID=${WEB_APP_ID}" >>"${ELECTRON_PATH}"; then
+    echo "${ERR_HEAD} write electron app id to .env file error"
     return 1
   fi
 

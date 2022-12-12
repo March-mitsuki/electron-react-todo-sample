@@ -8,7 +8,7 @@ const CtxMenu: React.FC = () => {
 
   return (
     <div
-      onClick={() => dispatch({ type: "setTodoMenu", payload: { id: -1, x: 0, y: 0 } })}
+      onClick={() => dispatch({ type: "setTodoMenu", payload: { id: "", x: 0, y: 0 } })}
       className=" absolute z-20 w-screen h-screen "
     >
       <div
