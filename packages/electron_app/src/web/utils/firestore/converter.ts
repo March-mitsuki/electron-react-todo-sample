@@ -1,11 +1,13 @@
-import { ToDoit } from "@doit/shared";
-import { DocumentData, QuerySnapshot } from "firebase/firestore";
 import { DateTime } from "luxon";
-import { weblogger } from "..";
-import { FirestoreDataType, TodoDataFromFIrestore } from "./converter_types";
+import { serverTimestamp } from "firebase/firestore";
+
+import { ToDoit } from "@doit/shared";
+import { FirestoreTodoType, CreateFirestoreTodo } from "@doit/shared/interfaces/firestore";
+
+import type { DocumentData, QuerySnapshot } from "firebase/firestore";
 
 export const todoConverter = {
-  toFirestore: (todo: ToDoit.Todo): FirestoreDataType => {
+  toFirestore: (todo: ToDoit.Todo): CreateFirestoreTodo => {
     return {
       locale: todo.locale,
       timezome: todo.timezone,
@@ -15,15 +17,16 @@ export const todoConverter = {
       priority: todo.priority,
       content: todo.content,
       is_finish: todo.is_finish,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp(),
     };
   },
   fromFirestore: (snapshot: QuerySnapshot<DocumentData>): ToDoit.Todo[] => {
     const todos: ToDoit.Todo[] = [];
     snapshot.forEach((doc) => {
-      weblogger.info("firestore converter", doc.data());
-      const data = doc.data() as TodoDataFromFIrestore;
+      const data = doc.data() as FirestoreTodoType;
       const parsedTodo = new ToDoit.Todo({
-        id: data.id,
+        id: doc.id,
         locale: data.locale,
         timezone: data.timezome,
         create_date: DateTime.fromISO(data.create_date),

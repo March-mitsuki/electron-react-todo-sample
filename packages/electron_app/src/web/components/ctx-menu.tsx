@@ -1,8 +1,27 @@
 import { useRef } from "react";
+import { doc, deleteDoc } from "firebase/firestore";
+
 import { useAppCtx } from "../store/store";
+import { weblogger } from "../utils";
 
 const CtxMenu: React.FC = () => {
   const { state, dispatch } = useAppCtx();
+
+  const handleDeleteTodo: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    if (!state.fdb || !state.auth?.currentUser) {
+      return;
+    }
+    weblogger.info("ctx-menu", "will delete:", state.todoMenu.id);
+    deleteDoc(doc(state.fdb, "todos", "v1", state.auth.currentUser.uid, state.todoMenu.id))
+      .then(() => {
+        weblogger.nomal("ctx-menu", "delete todo successfully");
+        dispatch({ type: "deleteTodo", payload: state.todoMenu.id });
+      })
+      .catch((err) => {
+        weblogger.err("ctx-menu", "delete todo:", err);
+      });
+  };
 
   const ctxMenuWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +39,7 @@ const CtxMenu: React.FC = () => {
         <div className=" absolute bg-NRyellow/80 h-full w-[2px] left-3 "></div>
         <div className=" ml-5 my-1 flex flex-col ">
           <button
-            onClick={() => dispatch({ type: "deleteTodo", payload: state.todoMenu.id })}
+            onClick={handleDeleteTodo}
             className=" z-10 text-NRblack text-left pl-2 hover:bg-NRblack/80 hover:text-NRyellow "
           >
             删除

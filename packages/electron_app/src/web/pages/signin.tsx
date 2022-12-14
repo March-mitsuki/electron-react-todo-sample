@@ -3,6 +3,7 @@ import { FormEventHandler, useState } from "react";
 import { Link } from "react-router-dom";
 
 // local dependencies
+import { FirebaseErrObj } from "@doit/shared/interfaces";
 import { useAppCtx } from "../store/store";
 import { BackGroundCanvas, HeadBtn } from "../components";
 import { weblogger } from "../utils";
@@ -22,7 +23,16 @@ const Signin: React.FC = () => {
       .then(() => {
         weblogger.nomal("signin", "user signin successfully");
       })
-      .catch((err) => weblogger.err("signin", err));
+      .catch((err: FirebaseErrObj) => {
+        weblogger.err("sign-in", err);
+
+        if (err.code === "auth/user-not-found" && err.name === "FirebaseError") {
+          alert("不存在此用户");
+        }
+        if (err.code === "auth/wrong-password" && err.name === "FirebaseError") {
+          alert("密码不正确");
+        }
+      });
   };
 
   return (

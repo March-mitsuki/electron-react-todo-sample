@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { addDoc, collection } from "firebase/firestore";
 
 // local dependencies
 import { weblogger } from "../utils";
@@ -9,26 +8,11 @@ import { initFirebase } from "../utils/initFirebase";
 import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
 import { dateToObj } from "@doit/shared/utils/date";
-import { todoConverter } from "../utils/firestore/converter";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
   if (type === "addTodo") {
-    // state.todo.push(payload);
-    if (!state.fdb) {
-      weblogger.err("reducer - addTodo", "fdb is undefined");
-      return state;
-    }
-    if (!state.auth?.currentUser) {
-      weblogger.err("reducer - addTodo", "auth is undefined");
-      return state;
-    }
-    const addData = todoConverter.toFirestore(payload);
-    addDoc(collection(state.fdb, "todos", "v1", state.auth.currentUser.uid), addData)
-      .then(() => {
-        weblogger.nomal("reducer - addTodo", "doc write successfully");
-      })
-      .catch((err) => weblogger.err("reducer - addTodo", "firebase add doc err:", err));
+    state.todo.push(payload);
     return { ...state, todo: state.todo };
     //
   } else if (type === "deleteTodo") {

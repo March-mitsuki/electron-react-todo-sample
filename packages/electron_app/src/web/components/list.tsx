@@ -113,6 +113,7 @@ const TodoList: React.FC = () => {
           return listNode(elem, idx);
         }
       })}
+      {state.todo.length === 0 && <div className=" text-NRblack text-center ">尚未创建任务</div>}
     </>
   );
 };

@@ -1,10 +1,12 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
 
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
 import { weblogger } from "../utils";
 import { EditTodoData } from "../store/types";
+import { todoConverter } from "../utils/firestore/converter";
 
 type TodoInputData = {
   todo: string;
@@ -43,6 +45,10 @@ const TodoForm: React.FC = () => {
   });
 
   const submitNewTodo = () => {
+    if (todoIptData.date === "" || todoIptData.todo === "") {
+      alert("不可添加空白任务");
+      return;
+    }
     const date = todoIptData.date;
     const year = Number(date.slice(0, 2));
     const month = Number(date.slice(2, 4));
@@ -67,8 +73,8 @@ const TodoForm: React.FC = () => {
     }
     const finish_date = DateTime.fromFormat(date, "yyLLdd");
     if (
-      finish_date.year < DateTime.now().year ||
-      finish_date.month < DateTime.now().month ||
+      finish_date.year < DateTime.now().year &&
+      finish_date.month < DateTime.now().month &&
       finish_date.day < DateTime.now().day
     ) {
       alert("你难道要穿越到过去完成这个任务吗? 请检查你的时间");
@@ -82,7 +88,22 @@ const TodoForm: React.FC = () => {
     });
 
     if (state.changeTodoForm.formType === "add") {
-      dispatch({ type: "addTodo", payload: newTodo });
+      if (!state.fdb) {
+        weblogger.err("reducer - addTodo", "fdb is undefined");
+        return state;
+      }
+      if (!state.auth?.currentUser) {
+        weblogger.err("reducer - addTodo", "auth is undefined");
+        return state;
+      }
+      const addData = todoConverter.toFirestore(newTodo);
+      addDoc(collection(state.fdb, "todos", "v1", state.auth.currentUser.uid), addData)
+        .then((data) => {
+          weblogger.nomal("form - addTodo", "doc write successfully", data.id);
+          newTodo.id = data.id;
+          dispatch({ type: "addTodo", payload: newTodo });
+        })
+        .catch((err) => weblogger.err("reducer - addTodo", "firebase add doc err:", err));
       setTodoIptData({
         todo: "",
         date: "",
