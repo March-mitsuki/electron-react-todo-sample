@@ -1,4 +1,4 @@
-import { weblogger } from "../utils";
+import { browserlogger as logger } from "white-logger/esm/browser";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 
@@ -14,12 +14,12 @@ const HeadBtn: React.FC<{
   const handleSignOut: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     if (!state.auth || !state.auth.currentUser) {
-      weblogger.err("head-btn", "state.auth is undefinde");
+      logger.err("head-btn", "state.auth is undefinde");
       return;
     }
     signOut(state.auth)
-      .then(() => weblogger.nomal("head-btn", "sign out successfully"))
-      .catch((err) => weblogger.err("head-btn", "sign out err", err));
+      .then(() => logger.nomal("head-btn", "sign out successfully"))
+      .catch((err) => logger.err("head-btn", "sign out err", err));
   };
 
   if (props.displayOnly) {

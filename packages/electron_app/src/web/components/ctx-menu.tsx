@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { doc, deleteDoc } from "firebase/firestore";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 import { useAppCtx } from "../store/store";
-import { weblogger } from "../utils";
 
 const CtxMenu: React.FC = () => {
   const { state, dispatch } = useAppCtx();
@@ -12,14 +12,14 @@ const CtxMenu: React.FC = () => {
     if (!state.fdb || !state.auth?.currentUser) {
       return;
     }
-    weblogger.info("ctx-menu", "will delete:", state.todoMenu.id);
+    logger.info("ctx-menu", "will delete:", state.todoMenu.id);
     deleteDoc(doc(state.fdb, "todos", "v1", state.auth.currentUser.uid, state.todoMenu.id))
       .then(() => {
-        weblogger.nomal("ctx-menu", "delete todo successfully");
+        logger.nomal("ctx-menu", "delete todo successfully");
         dispatch({ type: "deleteTodo", payload: state.todoMenu.id });
       })
       .catch((err) => {
-        weblogger.err("ctx-menu", "delete todo:", err);
+        logger.err("ctx-menu", "delete todo:", err);
       });
   };
 

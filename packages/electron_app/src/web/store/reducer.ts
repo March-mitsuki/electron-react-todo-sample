@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 // local dependencies
-import { weblogger } from "../utils";
+import { browserlogger as logger } from "white-logger/esm/browser";
 import { initFirebase } from "../utils/initFirebase";
 
 // type
@@ -24,7 +24,7 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     const changeTodoIdx = state.todo.findIndex((x) => x.id === payload.id);
     const dc = state.todo.map((x) => x);
     if (changeTodoIdx < 0) {
-      weblogger.err("edit-task", "can not find edit task index", state.changeTodoForm);
+      logger.err("edit-task", "can not find edit task index", state.changeTodoForm);
       return { ...state };
     }
     const changeTodo = dc[changeTodoIdx];

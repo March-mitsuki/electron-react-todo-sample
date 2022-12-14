@@ -2,6 +2,7 @@ import "./index.css";
 
 import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -10,7 +11,6 @@ import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import { weblogger } from "./utils";
 import { collection, getDocs } from "firebase/firestore";
 import { todoConverter } from "./utils/firestore/converter";
 
@@ -41,21 +41,21 @@ const App = () => {
     initReducer()
       .then((result) => {
         appDispatch({ type: "init", payload: result });
-        weblogger.nomal("App", "init reducer successfully");
+        logger.nomal("App", "init reducer successfully");
       })
-      .catch((err) => weblogger.err("App", err));
+      .catch((err) => logger.err("App", err));
   }, []);
 
   useEffect(() => {
     if (!appState.auth) {
-      weblogger.err("App", "appState.auth is undefinded");
+      logger.err("App", "appState.auth is undefinded");
       return;
     }
     appState.auth.onAuthStateChanged((user) => {
       if (user) {
-        weblogger.info("App", "user sign in successfully");
+        logger.info("App", "user sign in successfully");
         if (!appState.fdb) {
-          weblogger.err("on user signin", "fdb is undefined");
+          logger.err("on user signin", "fdb is undefined");
           return;
         }
         getDocs(collection(appState.fdb, "todos", "v1", user.uid))
@@ -64,7 +64,7 @@ const App = () => {
             appDispatch({ type: "setTodo", payload: todos });
           })
           .catch((err) => {
-            weblogger.err("on user signin", err);
+            logger.err("on user signin", err);
           });
         location.href = "#/";
       } else {

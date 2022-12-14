@@ -1,7 +1,8 @@
 import http from "http";
 import express from "express";
+import { nodelogger as logger } from "white-logger/node";
+import * as ansicode from "white-logger/utils/ansicode";
 
-import { serverlogger, ansicode } from "../utils";
 import { todoRouter } from "./routers";
 
 import type { RequestHandler } from "express";
@@ -17,7 +18,7 @@ const apiLoggerMiddleware = (option?: Partial<ApiLoggerMiddlewareOption>): Reque
     methodColor = option?.methodColor;
   }
   return (req, _, next) => {
-    serverlogger.infoConsole(
+    logger.infoConsole(
       "api",
       `${methodColor}${req.method}${ansicode.ansiFont.reset}`,
       req.url,
@@ -27,7 +28,7 @@ const apiLoggerMiddleware = (option?: Partial<ApiLoggerMiddlewareOption>): Reque
       req.hostname,
     );
     // To ensure that ansi code is not written to the log file
-    serverlogger.infoWrite("api", req.method, req.url, "ip:", req.ip, "hostname:", req.hostname);
+    logger.infoWrite("api", req.method, req.url, "ip:", req.ip, "hostname:", req.hostname);
     next();
 
     return;
@@ -54,7 +55,7 @@ const startServer = (PORT: number) => {
   app.use("/todo", todoRouter);
 
   server.listen(PORT, () => {
-    serverlogger.nomal("server", __filename, "server is running on port", PORT);
+    logger.nomal("server", __filename, "server is running on port", PORT);
   });
 };
 

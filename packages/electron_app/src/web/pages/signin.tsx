@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { FirebaseErrObj } from "@doit/shared/interfaces";
 import { useAppCtx } from "../store/store";
 import { BackGroundCanvas, HeadBtn } from "../components";
-import { weblogger } from "../utils";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 const Signin: React.FC = () => {
   const { state } = useAppCtx();
@@ -16,15 +16,15 @@ const Signin: React.FC = () => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!state.auth) {
-      weblogger.err("signin", "auth is undefinde");
+      logger.err("signin", "auth is undefinde");
       return;
     }
     signInWithEmailAndPassword(state.auth, email, password)
       .then(() => {
-        weblogger.nomal("signin", "user signin successfully");
+        logger.nomal("signin", "user signin successfully");
       })
       .catch((err: FirebaseErrObj) => {
-        weblogger.err("sign-in", err);
+        logger.err("sign-in", err);
 
         if (err.code === "auth/user-not-found" && err.name === "FirebaseError") {
           alert("不存在此用户");

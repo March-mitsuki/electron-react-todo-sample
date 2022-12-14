@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
-import { weblogger } from "../utils";
 import { EditTodoData } from "../store/types";
 import { todoConverter } from "../utils/firestore/converter";
 
@@ -26,7 +26,7 @@ const TodoForm: React.FC = () => {
         dateYearStr[dateYearStr.length - 1] + dateYearStr[dateYearStr.length - 2],
       );
       if (isNaN(dateYear)) {
-        weblogger.err("todo-form", "can not find date year", dateYearStr, dateYear);
+        logger.err("todo-form", "can not find date year", dateYearStr, dateYear);
         return {
           todo: "err",
           date: "can not get date",
@@ -89,21 +89,21 @@ const TodoForm: React.FC = () => {
 
     if (state.changeTodoForm.formType === "add") {
       if (!state.fdb) {
-        weblogger.err("reducer - addTodo", "fdb is undefined");
+        logger.err("reducer - addTodo", "fdb is undefined");
         return state;
       }
       if (!state.auth?.currentUser) {
-        weblogger.err("reducer - addTodo", "auth is undefined");
+        logger.err("reducer - addTodo", "auth is undefined");
         return state;
       }
       const addData = todoConverter.toFirestore(newTodo);
       addDoc(collection(state.fdb, "todos", "v1", state.auth.currentUser.uid), addData)
         .then((data) => {
-          weblogger.nomal("form - addTodo", "doc write successfully", data.id);
+          logger.nomal("form - addTodo", "doc write successfully", data.id);
           newTodo.id = data.id;
           dispatch({ type: "addTodo", payload: newTodo });
         })
-        .catch((err) => weblogger.err("reducer - addTodo", "firebase add doc err:", err));
+        .catch((err) => logger.err("reducer - addTodo", "firebase add doc err:", err));
       setTodoIptData({
         todo: "",
         date: "",
@@ -117,7 +117,7 @@ const TodoForm: React.FC = () => {
       dispatch({ type: "editTodo", payload: editData });
       dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } });
     } else {
-      weblogger.err("todo-from", "incurrent from type", state.changeTodoForm);
+      logger.err("todo-from", "incurrent from type", state.changeTodoForm);
     }
     return;
   };

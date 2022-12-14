@@ -1,6 +1,7 @@
+import { nodelogger as logger } from "white-logger/node";
+
 import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
-import { serverlogger } from "../utils";
 
 export const initFirebaseApp = async () => {
   const rootDir = process.env.DOYA_ROOT;
@@ -20,7 +21,7 @@ export const initFirebaseApp = async () => {
     credential: credential.cert(secretFirebaseJson),
   });
 
-  serverlogger.nomal("server-firebase-admin", __filename, "init firebase admin app successfully.");
+  logger.nomal("server-firebase-admin", __filename, "init firebase admin app successfully.");
 };
 
 export default initFirebaseApp;

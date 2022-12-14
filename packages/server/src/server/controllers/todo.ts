@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
+import { nodelogger as logger } from "white-logger/node";
 
-import { serverlogger } from "../../utils";
 import { ToDoit } from "@doit/shared";
 
 // type
@@ -14,21 +14,21 @@ export const getAllTodosDummy: RequestHandler<ParamsDictionary, TodoGetAllResTyp
       try {
         const todoList = [
           new ToDoit.Todo({
-            id: 1,
+            id: "",
             priority: 3,
             content: "项目1",
             create_date: DateTime.now(),
             finish_date: DateTime.fromFormat("221228", "yyLLdd"),
           }),
           new ToDoit.Todo({
-            id: 2,
+            id: "",
             priority: 1,
             content: "ミッション2",
             create_date: DateTime.now(),
             finish_date: DateTime.fromFormat("230102", "yyLLdd"),
           }),
           new ToDoit.Todo({
-            id: 3,
+            id: "",
             priority: 2,
             content: "task3",
             create_date: DateTime.now(),
@@ -48,7 +48,7 @@ export const getAllTodosDummy: RequestHandler<ParamsDictionary, TodoGetAllResTyp
       });
     })
     .catch((err) => {
-      serverlogger.err("api", __filename, "getall dummy", err);
+      logger.err("api", __filename, "getall dummy", err);
     });
   return;
 };

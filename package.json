@@ -40,6 +40,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "env-cmd": "^10.1.0",
-    "luxon": "^3.1.0"
+    "luxon": "^3.1.0",
+    "white-logger": "^0.1.1"
   }
 }

@@ -12,7 +12,7 @@ import {
   Loading,
   BackGroundCanvas,
 } from "../components";
-import { weblogger } from "../utils";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 const Home: React.FC = () => {
   const { state } = useAppCtx();
@@ -22,7 +22,7 @@ const Home: React.FC = () => {
       return;
     }
     if (!state.auth?.currentUser) {
-      weblogger.warn("home", "not signin");
+      logger.warn("home", "not signin");
       location.href = "#/signin";
       return;
     }
