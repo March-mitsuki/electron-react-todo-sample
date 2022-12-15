@@ -25,7 +25,7 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     const dc = state.todo.map((x) => x);
     if (changeTodoIdx < 0) {
       logger.err("edit-task", "can not find edit task index", state.changeTodoForm);
-      return { ...state };
+      return state;
     }
     const changeTodo = dc[changeTodoIdx];
     const newFinishDate = DateTime.fromFormat(payload.date, "yyLLdd");

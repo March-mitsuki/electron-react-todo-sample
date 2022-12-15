@@ -1,12 +1,14 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { browserlogger as logger } from "white-logger/esm/browser";
 
 import { ToDoit } from "@doit/shared";
 import { useAppCtx } from "../store/store";
 import { EditTodoData } from "../store/types";
 import { todoConverter } from "../utils/firestore/converter";
+import { dateToObj } from "@doit/shared/utils/date";
+import { ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
 
 type TodoInputData = {
   todo: string;
@@ -21,20 +23,24 @@ const TodoForm: React.FC = () => {
     if (state.changeTodoForm.formType === "edit") {
       const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
       const currentTodo = state.todo[idx];
-      const dateYearStr = currentTodo.finish_date_obj.year.toString();
-      const dateYear = Number(
-        dateYearStr[dateYearStr.length - 1] + dateYearStr[dateYearStr.length - 2],
-      );
-      if (isNaN(dateYear)) {
-        logger.err("todo-form", "can not find date year", dateYearStr, dateYear);
-        return {
-          todo: "err",
-          date: "can not get date",
-        };
+      const _year = currentTodo.finish_date_obj.year.toString();
+      const year = _year[_year.length - 2] + _year[_year.length - 1];
+      logger.info("edit-form", "date obj:", currentTodo.finish_date_obj);
+
+      const _month = currentTodo.finish_date_obj.month;
+      let month = "";
+      if (_month > 0 && _month < 10) {
+        month = "0" + _month.toString();
+      }
+
+      const _day = currentTodo.finish_date_obj.day;
+      let day = "";
+      if (_day > 0 && _day < 10) {
+        day = "0" + _day.toString();
       }
       return {
         todo: currentTodo.content,
-        date: `${dateYear}${currentTodo.finish_date_obj.month}${currentTodo.finish_date_obj.day}`,
+        date: `${year}${month}${day}`,
       };
     } else {
       return {
@@ -89,17 +95,22 @@ const TodoForm: React.FC = () => {
 
     if (state.changeTodoForm.formType === "add") {
       if (!state.fdb) {
-        logger.err("reducer - addTodo", "fdb is undefined");
+        logger.err("todoForm - addTodo", "fdb is undefined");
         return state;
       }
       if (!state.auth?.currentUser) {
-        logger.err("reducer - addTodo", "auth is undefined");
+        logger.err("todoForm - addTodo", "auth is undefined");
         return state;
       }
-      const addData = todoConverter.toFirestore(newTodo);
-      addDoc(collection(state.fdb, "todos", "v1", state.auth.currentUser.uid), addData)
+      const collectionRef = collection(
+        state.fdb,
+        "todos",
+        "v1",
+        state.auth.currentUser.uid,
+      ).withConverter(todoConverter);
+      addDoc(collectionRef, newTodo)
         .then((data) => {
-          logger.nomal("form - addTodo", "doc write successfully", data.id);
+          logger.nomal("form - addTodo", "doc write successfully:", data.id);
           newTodo.id = data.id;
           dispatch({ type: "addTodo", payload: newTodo });
         })
@@ -114,8 +125,40 @@ const TodoForm: React.FC = () => {
         todo: todoIptData.todo,
         date: todoIptData.date,
       };
-      dispatch({ type: "editTodo", payload: editData });
-      dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } });
+      if (!state.fdb) {
+        logger.err("todoForm - addTodo", "fdb is undefined");
+        return state;
+      }
+      if (!state.auth?.currentUser) {
+        logger.err("tofoForm - addTodo", "auth is undefined");
+        return state;
+      }
+      const newFinishDate = DateTime.fromFormat(editData.date, "yyLLdd");
+      const updateData: Partial<ClientFirestoreTodo> = {
+        content: editData.todo,
+        finish_date: newFinishDate.toISO(),
+        finish_date_obj: dateToObj({
+          date: newFinishDate,
+          timezone: "Asia/Tokyo",
+          locale: "zh",
+        }),
+      };
+      const docRef = doc(
+        state.fdb,
+        "todos",
+        "v1",
+        state.auth.currentUser.uid,
+        state.changeTodoForm.id,
+      );
+      updateDoc(docRef, updateData)
+        .then(() => {
+          logger.nomal("todo-from", "updated successfullt");
+          dispatch({ type: "editTodo", payload: editData });
+          dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } });
+        })
+        .catch((err) => {
+          logger.err("todo - form", "edit todo err:", err);
+        });
     } else {
       logger.err("todo-from", "incurrent from type", state.changeTodoForm);
     }

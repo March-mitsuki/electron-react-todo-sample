@@ -61,26 +61,26 @@ export class Todo {
     this.content = content;
     this.is_finish = is_finish;
   }
-}
 
-/**
- *
- * @param p Priority
- * @returns stringify priority OR empty string(when p out of range)
- */
-export const priorityToString = (p: Priority): string => {
-  switch (p) {
-    case 1:
-      return priorityStr[1];
-    case 2:
-      return priorityStr[2];
-    case 3:
-      return priorityStr[3];
-    case 4:
-      return priorityStr[4];
-    case 5:
-      return priorityStr[5];
-    default:
-      return "";
+  /**
+   *
+   * @param p Priority
+   * @returns stringify priority OR empty string(when p out of range)
+   */
+  sPriority(): string {
+    switch (this.priority) {
+      case 1:
+        return priorityStr[1];
+      case 2:
+        return priorityStr[2];
+      case 3:
+        return priorityStr[3];
+      case 4:
+        return priorityStr[4];
+      case 5:
+        return priorityStr[5];
+      default:
+        return "";
+    }
   }
-};
+}

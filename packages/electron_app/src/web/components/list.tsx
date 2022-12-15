@@ -2,10 +2,9 @@ import { sortBy } from "sort-by-typescript";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
-import { priorityToString } from "@doit/shared/interfaces/todo_type";
 
 // type
-import type { Todo, Priority } from "@doit/shared/interfaces/todo_type";
+import type { Todo } from "@doit/shared/interfaces/todo_type";
 import { DateTime } from "luxon";
 import { PageType } from "../store/types";
 
@@ -25,17 +24,17 @@ const TodoList: React.FC = () => {
     });
   };
 
-  const priorityNode = (p: Priority) => {
-    if (p === 2) {
+  const priorityNode = (todo: Todo) => {
+    if (todo.priority === 2) {
       return (
         <div className=" absolute left-[3.3px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
-          {priorityToString(p)}
+          {todo.sPriority()}
         </div>
       );
     } else {
       return (
         <div className=" absolute left-[3.5px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
-          {priorityToString(p)}
+          {todo.sPriority()}
         </div>
       );
     }
@@ -53,7 +52,7 @@ const TodoList: React.FC = () => {
           <>
             <div className="flex items-center gap-1">
               <div className="h-[11px] w-[11px] mx-[2px] bg-NRorange rotate-45"></div>
-              <div className="text-NRorange">{elem.content}</div>
+              <div className="text-NRorange truncate w-[calc(100vw/3)]">{elem.content}</div>
             </div>
           </>
         ) : (
@@ -80,7 +79,7 @@ const TodoList: React.FC = () => {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
-            {priorityNode(elem.priority)}
+            {priorityNode(elem)}
             <div className="text-NRblack truncate w-[calc(100vw/3)] ">{elem.content}</div>
           </div>
         )}

@@ -3,6 +3,7 @@ import "./index.css";
 import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -11,8 +12,8 @@ import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import { collection, getDocs } from "firebase/firestore";
 import { todoConverter } from "./utils/firestore/converter";
+import { ToDoit } from "@doit/shared";
 
 const router = createHashRouter([
   {
@@ -58,9 +59,16 @@ const App = () => {
           logger.err("on user signin", "fdb is undefined");
           return;
         }
-        getDocs(collection(appState.fdb, "todos", "v1", user.uid))
-          .then((snapshot) => {
-            const todos = todoConverter.fromFirestore(snapshot);
+        const q = query(
+          collection(appState.fdb, "todos", "v1", user.uid).withConverter(todoConverter),
+          where("deleted_at", "==", null),
+        );
+        getDocs(q)
+          .then((snap) => {
+            const todos: ToDoit.Todo[] = [];
+            snap.docs.forEach((doc) => {
+              todos.push(doc.data());
+            });
             appDispatch({ type: "setTodo", payload: todos });
           })
           .catch((err) => {

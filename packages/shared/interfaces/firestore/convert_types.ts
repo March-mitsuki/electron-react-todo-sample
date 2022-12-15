@@ -13,9 +13,16 @@ export type FirestoreTodoType = {
   is_finish: boolean;
   created_at: Timestamp; // serverTimestamp
   updated_at: Timestamp; // serverTimestamp
+  deleted_at: Timestamp | null;
+  expire_at: Timestamp | null;
 };
 
-export type CreateFirestoreTodo = Omit<FirestoreTodoType, "id" | "created_at" | "updated_at"> & {
-  created_at: FieldValue;
-  updated_at: FieldValue;
+export type ClientFirestoreTodo = Omit<
+  FirestoreTodoType,
+  "id" | "created_at" | "updated_at" | "deleted_at" | "expire_at"
+> & {
+  created_at: FieldValue | Date;
+  updated_at: FieldValue | Date;
+  deleted_at: FieldValue | Date | null;
+  expire_at: FieldValue | Date | null;
 };

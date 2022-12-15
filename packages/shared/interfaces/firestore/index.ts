@@ -1,1 +1,1 @@
-export type { CreateFirestoreTodo, FirestoreTodoType } from "./convert_types";
+export type { ClientFirestoreTodo, FirestoreTodoType } from "./convert_types";

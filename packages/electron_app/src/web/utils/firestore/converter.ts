@@ -2,12 +2,12 @@ import { DateTime } from "luxon";
 import { serverTimestamp } from "firebase/firestore";
 
 import { ToDoit } from "@doit/shared";
-import { FirestoreTodoType, CreateFirestoreTodo } from "@doit/shared/interfaces/firestore";
+import { FirestoreTodoType, ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
 
-import type { DocumentData, QuerySnapshot } from "firebase/firestore";
+import type { FirestoreDataConverter, QueryDocumentSnapshot } from "firebase/firestore";
 
-export const todoConverter = {
-  toFirestore: (todo: ToDoit.Todo): CreateFirestoreTodo => {
+export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
+  toFirestore: (todo: ToDoit.Todo): ClientFirestoreTodo => {
     return {
       locale: todo.locale,
       timezome: todo.timezone,
@@ -19,24 +19,22 @@ export const todoConverter = {
       is_finish: todo.is_finish,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp(),
+      deleted_at: null,
+      expire_at: null,
     };
   },
-  fromFirestore: (snapshot: QuerySnapshot<DocumentData>): ToDoit.Todo[] => {
-    const todos: ToDoit.Todo[] = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data() as FirestoreTodoType;
-      const parsedTodo = new ToDoit.Todo({
-        id: doc.id,
-        locale: data.locale,
-        timezone: data.timezome,
-        create_date: DateTime.fromISO(data.create_date),
-        finish_date: DateTime.fromISO(data.finish_date),
-        priority: data.priority,
-        content: data.content,
-        is_finish: data.is_finish,
-      });
-      todos.push(parsedTodo);
+  fromFirestore: (snap: QueryDocumentSnapshot<FirestoreTodoType>, options) => {
+    const data = snap.data(options);
+    const parsedTodo = new ToDoit.Todo({
+      id: snap.id,
+      locale: data.locale,
+      timezone: data.timezome,
+      create_date: DateTime.fromISO(data.create_date),
+      finish_date: DateTime.fromISO(data.finish_date),
+      priority: data.priority,
+      content: data.content,
+      is_finish: data.is_finish,
     });
-    return todos; // eslint-disable-line
+    return parsedTodo;
   },
 };
