@@ -9,6 +9,7 @@ import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
 import { dateToObj } from "@doit/shared/utils/date";
 import { collection, doc } from "firebase/firestore";
+import { todoConverter } from "../utils/firestore/converter";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
@@ -91,9 +92,9 @@ export const initReducer = async (): Promise<AppState> => {
   const eleAPI = window.electronAPI;
   const mode = await eleAPI.send.getAppMode();
   const { auth, fdb } = await initFirebase(mode);
-  const collRef = collection(fdb, "private", "v1", "todos");
+  const collRef = collection(fdb, "private", "v1", "todos").withConverter(todoConverter);
   const docRef: AppState["fdbTodoDocRef"] = (todoId) => {
-    return doc(fdb, "private", "v1", "todos", todoId);
+    return doc(fdb, "private", "v1", "todos", todoId).withConverter(todoConverter);
   };
 
   return {

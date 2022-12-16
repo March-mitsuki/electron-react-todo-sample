@@ -12,7 +12,6 @@ import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import { todoConverter } from "./utils/firestore/converter";
 import { ToDoit } from "@doit/shared";
 
 const router = createHashRouter([
@@ -63,10 +62,7 @@ const App = () => {
           logger.err("on user signin", "collection ref is undefiend");
           return;
         }
-        const q = query(
-          appState.fdbTodoCollRef.withConverter(todoConverter),
-          where("user_id", "==", user.uid),
-        );
+        const q = query(appState.fdbTodoCollRef, where("user_id", "==", user.uid));
         getDocs(q)
           .then((snap) => {
             const todos: ToDoit.Todo[] = [];

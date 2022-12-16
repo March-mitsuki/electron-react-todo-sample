@@ -1,4 +1,5 @@
 import { sortBy } from "sort-by-typescript";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
@@ -7,11 +8,12 @@ import { useAppCtx } from "../store/store";
 import type { Todo } from "@doit/shared/interfaces/todo_type";
 import { DateTime } from "luxon";
 import { PageType } from "../store/types";
+import { updateDoc } from "firebase/firestore";
 
 const TodoList: React.FC = () => {
   const { state, dispatch } = useAppCtx();
 
-  const listCtxMenuHandler = (e: React.MouseEvent, elem: Todo) => {
+  const handleListCtxMenu = (e: React.MouseEvent, elem: Todo) => {
     e.preventDefault();
     console.log("right click", elem.id);
     dispatch({
@@ -22,6 +24,25 @@ const TodoList: React.FC = () => {
         y: e.clientY,
       },
     });
+  };
+
+  const handleFinishToggle = (todo: Todo) => {
+    if (!state.fdbTodoDocRef) {
+      logger.err("todo list", "toggle finish -> todo doc ref is undefined");
+      return;
+    }
+    updateDoc(state.fdbTodoDocRef(todo.id), {
+      is_finish: !todo.is_finish,
+    })
+      .then(() => {
+        dispatch({
+          type: "toggleFinish",
+          payload: { id: todo.id, nowFinish: todo.is_finish },
+        });
+      })
+      .catch((err) => {
+        logger.err("", "toggle finish update doc err:", err);
+      });
   };
 
   const priorityNode = (todo: Todo) => {
@@ -45,7 +66,7 @@ const TodoList: React.FC = () => {
       <label
         key={idx}
         htmlFor={`todo${idx}`}
-        onContextMenu={(e) => listCtxMenuHandler(e, elem)}
+        onContextMenu={(e) => handleListCtxMenu(e, elem)}
         className=" flex gap-1 items-center justify-between cursor-pointer "
       >
         {state.todoMenu.id === elem.id ? (
@@ -61,12 +82,7 @@ const TodoList: React.FC = () => {
               id={`todo${idx}`}
               type="checkbox"
               checked={elem.is_finish}
-              onChange={() =>
-                dispatch({
-                  type: "toggleFinish",
-                  payload: { id: elem.id, nowFinish: elem.is_finish },
-                })
-              }
+              onChange={() => handleFinishToggle(elem)}
               className="peer appearance-none border-2 h-[15px] w-[15px] border-NRblack hover:outline-[2px] hover:outline hover:outline-NRorange"
             />
             <svg
