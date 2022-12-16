@@ -3,7 +3,7 @@ import "./index.css";
 import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { getDocs, query, where } from "firebase/firestore";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -59,9 +59,13 @@ const App = () => {
           logger.err("on user signin", "fdb is undefined");
           return;
         }
+        if (!appState.fdbTodoCollRef) {
+          logger.err("on user signin", "collection ref is undefiend");
+          return;
+        }
         const q = query(
-          collection(appState.fdb, "todos", "v1", user.uid).withConverter(todoConverter),
-          where("deleted_at", "==", null),
+          appState.fdbTodoCollRef.withConverter(todoConverter),
+          where("user_id", "==", user.uid),
         );
         getDocs(q)
           .then((snap) => {

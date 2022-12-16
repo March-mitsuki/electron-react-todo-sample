@@ -8,6 +8,7 @@ import { initFirebase } from "../utils/initFirebase";
 import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { ToDoit } from "@doit/shared";
 import { dateToObj } from "@doit/shared/utils/date";
+import { collection, doc } from "firebase/firestore";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
@@ -68,7 +69,8 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
 export const initialState: AppState = {
   todo: [
     new ToDoit.Todo({
-      id: "-1",
+      id: "",
+      user_id: "",
       content: "正在连接服务器...",
       create_date: DateTime.now(),
       finish_date: DateTime.now(),
@@ -81,12 +83,25 @@ export const initialState: AppState = {
   changeTodoForm: { formType: "add", id: null },
   auth: undefined,
   fdb: undefined,
+  fdbTodoCollRef: undefined,
+  fdbTodoDocRef: undefined,
 };
 
 export const initReducer = async (): Promise<AppState> => {
   const eleAPI = window.electronAPI;
   const mode = await eleAPI.send.getAppMode();
   const { auth, fdb } = await initFirebase(mode);
+  const collRef = collection(fdb, "private", "v1", "todos");
+  const docRef: AppState["fdbTodoDocRef"] = (todoId) => {
+    return doc(fdb, "private", "v1", "todos", todoId);
+  };
 
-  return { ...initialState, isInit: true, auth: auth, fdb: fdb };
+  return {
+    ...initialState,
+    isInit: true,
+    auth: auth,
+    fdb: fdb,
+    fdbTodoCollRef: collRef,
+    fdbTodoDocRef: docRef,
+  };
 };

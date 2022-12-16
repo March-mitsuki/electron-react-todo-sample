@@ -1,27 +1,20 @@
 import { useRef } from "react";
-import { DateTime } from "luxon";
-import { doc, updateDoc } from "firebase/firestore";
+import { deleteDoc } from "firebase/firestore";
 import { browserlogger as logger } from "white-logger/esm/browser";
 
 import { useAppCtx } from "../store/store";
-import { ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
 
 const CtxMenu: React.FC = () => {
   const { state, dispatch } = useAppCtx();
 
   const handleDeleteTodo: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    if (!state.fdb || !state.auth?.currentUser) {
+    if (!state.fdbTodoDocRef) {
+      logger.err("ctx-menu", "delete todo -> doc ref is undefined");
       return;
     }
     logger.info("ctx-menu", "will delete:", state.todoMenu.id);
-    const now = DateTime.now();
-    const updateData: Partial<ClientFirestoreTodo> = {
-      deleted_at: now.toJSDate(),
-      expire_at: now.plus({ days: 30 }).toJSDate(),
-    };
-    const docRef = doc(state.fdb, "todos", "v1", state.auth.currentUser.uid, state.todoMenu.id);
-    updateDoc(docRef, updateData)
+    deleteDoc(state.fdbTodoDocRef(state.todoMenu.id))
       .then(() => {
         logger.nomal("ctx-menu", "delete todo successfully");
         dispatch({ type: "deleteTodo", payload: state.todoMenu.id });

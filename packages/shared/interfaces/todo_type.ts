@@ -18,6 +18,7 @@ const priorityStr = {
 
 export class Todo {
   id: string;
+  user_id: string;
   locale: string;
   timezone: string;
   create_date: luxon.DateTime;
@@ -29,6 +30,7 @@ export class Todo {
 
   constructor({
     id,
+    user_id,
     locale = "zh",
     timezone = "Asia/Tokyo",
     create_date,
@@ -38,6 +40,7 @@ export class Todo {
     is_finish = false,
   }: {
     id: string;
+    user_id: string;
     locale?: string;
     timezone?: string;
     create_date: luxon.DateTime;
@@ -47,6 +50,7 @@ export class Todo {
     is_finish?: boolean;
   }) {
     this.id = id;
+    this.user_id = user_id;
     this.locale = locale;
     this.timezone = timezone;
     this.create_date = create_date;

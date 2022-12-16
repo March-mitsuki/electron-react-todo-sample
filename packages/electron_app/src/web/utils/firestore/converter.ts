@@ -9,6 +9,7 @@ import type { FirestoreDataConverter, QueryDocumentSnapshot } from "firebase/fir
 export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
   toFirestore: (todo: ToDoit.Todo): ClientFirestoreTodo => {
     return {
+      user_id: todo.user_id,
       locale: todo.locale,
       timezome: todo.timezone,
       create_date: todo.create_date.toISO(),
@@ -19,14 +20,13 @@ export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
       is_finish: todo.is_finish,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp(),
-      deleted_at: null,
-      expire_at: null,
     };
   },
   fromFirestore: (snap: QueryDocumentSnapshot<FirestoreTodoType>, options) => {
     const data = snap.data(options);
     const parsedTodo = new ToDoit.Todo({
       id: snap.id,
+      user_id: data.user_id,
       locale: data.locale,
       timezone: data.timezome,
       create_date: DateTime.fromISO(data.create_date),

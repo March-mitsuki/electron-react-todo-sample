@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, updateDoc } from "firebase/firestore";
 import { browserlogger as logger } from "white-logger/esm/browser";
 
 import { ToDoit } from "@doit/shared";
@@ -28,15 +28,19 @@ const TodoForm: React.FC = () => {
       logger.info("edit-form", "date obj:", currentTodo.finish_date_obj);
 
       const _month = currentTodo.finish_date_obj.month;
-      let month = "";
+      let month: string;
       if (_month > 0 && _month < 10) {
         month = "0" + _month.toString();
+      } else {
+        month = _month.toString();
       }
 
       const _day = currentTodo.finish_date_obj.day;
-      let day = "";
+      let day: string;
       if (_day > 0 && _day < 10) {
         day = "0" + _day.toString();
+      } else {
+        day = _day.toString();
       }
       return {
         todo: currentTodo.content,
@@ -86,8 +90,13 @@ const TodoForm: React.FC = () => {
       alert("你难道要穿越到过去完成这个任务吗? 请检查你的时间");
       return;
     }
+    if (!state.auth?.currentUser) {
+      alert("你尚未登录");
+      return;
+    }
     const newTodo = new ToDoit.Todo({
-      id: Date.now().toString(),
+      id: "",
+      user_id: state.auth.currentUser.uid,
       create_date: DateTime.now(),
       finish_date: finish_date,
       content: todoIptData.todo,
@@ -98,16 +107,11 @@ const TodoForm: React.FC = () => {
         logger.err("todoForm - addTodo", "fdb is undefined");
         return state;
       }
-      if (!state.auth?.currentUser) {
-        logger.err("todoForm - addTodo", "auth is undefined");
-        return state;
+      if (!state.fdbTodoCollRef) {
+        logger.err("todo-form", "add todo -> collectron ref is undefined");
+        return;
       }
-      const collectionRef = collection(
-        state.fdb,
-        "todos",
-        "v1",
-        state.auth.currentUser.uid,
-      ).withConverter(todoConverter);
+      const collectionRef = state.fdbTodoCollRef.withConverter(todoConverter);
       addDoc(collectionRef, newTodo)
         .then((data) => {
           logger.nomal("form - addTodo", "doc write successfully:", data.id);
@@ -129,10 +133,6 @@ const TodoForm: React.FC = () => {
         logger.err("todoForm - addTodo", "fdb is undefined");
         return state;
       }
-      if (!state.auth?.currentUser) {
-        logger.err("tofoForm - addTodo", "auth is undefined");
-        return state;
-      }
       const newFinishDate = DateTime.fromFormat(editData.date, "yyLLdd");
       const updateData: Partial<ClientFirestoreTodo> = {
         content: editData.todo,
@@ -143,14 +143,11 @@ const TodoForm: React.FC = () => {
           locale: "zh",
         }),
       };
-      const docRef = doc(
-        state.fdb,
-        "todos",
-        "v1",
-        state.auth.currentUser.uid,
-        state.changeTodoForm.id,
-      );
-      updateDoc(docRef, updateData)
+      if (!state.fdbTodoDocRef) {
+        logger.err("todo-form", "fdb todo doc ref is undefined");
+        return;
+      }
+      updateDoc(state.fdbTodoDocRef(editData.id), updateData)
         .then(() => {
           logger.nomal("todo-from", "updated successfullt");
           dispatch({ type: "editTodo", payload: editData });

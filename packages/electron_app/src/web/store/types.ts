@@ -2,7 +2,7 @@ import { ToDoit } from "@doit/shared";
 import { Dispatch } from "react";
 
 import type { Auth } from "firebase/auth";
-import type { Firestore } from "firebase/firestore";
+import type { Firestore, CollectionReference, DocumentReference } from "firebase/firestore";
 
 export enum PageType {
   ongoing = 1,
@@ -29,6 +29,8 @@ export type AppState = {
   changeTodoForm: TodoFormTypes;
   auth: Auth | undefined;
   fdb: Firestore | undefined;
+  fdbTodoCollRef: CollectionReference | undefined;
+  fdbTodoDocRef: ((todoId: string) => DocumentReference) | undefined;
 };
 
 export type AppActionType<T, P> = {
