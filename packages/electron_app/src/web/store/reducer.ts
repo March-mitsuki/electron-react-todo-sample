@@ -26,7 +26,11 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     const changeTodoIdx = state.todo.findIndex((x) => x.id === payload.id);
     const dc = state.todo.map((x) => x);
     if (changeTodoIdx < 0) {
-      logger.err("edit-task", "can not find edit task index", state.changeTodoForm);
+      logger.err(
+        "edit-task",
+        "can not find edit task index",
+        state.changeTodoForm,
+      );
       return state;
     }
     const changeTodo = dc[changeTodoIdx];
@@ -87,11 +91,15 @@ export const initialState: AppState = {
 
 export const initReducer = async (): Promise<AppState> => {
   const eleAPI = window.electronAPI;
-  const mode = await eleAPI.send.getAppMode();
+  const mode = await eleAPI.invoke.getAppMode();
   const { auth, fdb } = await initFirebase(mode);
-  const collRef = collection(fdb, "private", "v1", "todos").withConverter(todoConverter);
+  const collRef = collection(fdb, "private", "v1", "todos").withConverter(
+    todoConverter,
+  );
   const docRef: AppState["fdbTodoDocRef"] = (todoId) => {
-    return doc(fdb, "private", "v1", "todos", todoId).withConverter(todoConverter);
+    return doc(fdb, "private", "v1", "todos", todoId).withConverter(
+      todoConverter,
+    );
   };
 
   return {

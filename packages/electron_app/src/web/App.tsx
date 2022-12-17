@@ -4,6 +4,10 @@ import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
 import { getDocs, query, where } from "firebase/firestore";
+import {
+  parseCronExpression,
+  TimerBasedCronScheduler as scheduler,
+} from "cron-schedule";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -38,6 +42,10 @@ const App = () => {
   const ctxProviderState = { state: appState, dispatch: appDispatch };
 
   useMemo(() => {
+    const cron = parseCronExpression("*/1 * * * *");
+    scheduler.setInterval(cron, () => {
+      logger.info("App", "corn excuted now. next will:", cron.getNextDate());
+    });
     initReducer()
       .then((result) => {
         appDispatch({ type: "init", payload: result });
@@ -62,7 +70,10 @@ const App = () => {
           logger.err("on user signin", "collection ref is undefiend");
           return;
         }
-        const q = query(appState.fdbTodoCollRef, where("user_id", "==", user.uid));
+        const q = query(
+          appState.fdbTodoCollRef,
+          where("user_id", "==", user.uid),
+        );
         getDocs(q)
           .then((snap) => {
             const todos: ToDoit.Todo[] = [];

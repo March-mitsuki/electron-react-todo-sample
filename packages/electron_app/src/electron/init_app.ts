@@ -1,10 +1,11 @@
 import path from "path";
 import { BrowserWindow, app, ipcMain } from "electron";
-import got from "got";
 
 async function initDotenv(filename: string) {
   const dotenv = await import("dotenv");
-  const dotenvResult = dotenv.config({ path: path.resolve(process.cwd(), filename) });
+  const dotenvResult = dotenv.config({
+    path: path.resolve(process.cwd(), filename),
+  });
   if (dotenvResult.error) {
     throw dotenvResult.error;
   } else {
