@@ -7,7 +7,9 @@ import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import path from "path";
 import * as dotenv from "dotenv";
 
-const _env = dotenv.config({ path: path.resolve(process.cwd(), ".env.local") }).parsed;
+const _env = dotenv.config({
+  path: path.resolve(process.cwd(), ".env.local"),
+}).parsed;
 const env: { [name: string]: string } = {};
 // only exposed variable with WEB_ prefix
 if (_env) {

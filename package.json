@@ -9,6 +9,8 @@
     "packages/*"
   ],
   "scripts": {
+    "prettier": "prettier --config ./.prettierrc.json --write ./packages/**/*.{ts,js}",
+    "prettier:check": "prettier --config ./.prettierrc.json --check ./packages/**/*.{ts,js}",
     "init-app": "./scripts/init_app.bash",
     "init-app-z": "./scripts/init_app.zsh",
     "run:web": "yarn workspace @doit/solid_web",
@@ -23,8 +25,8 @@
     "build:server:dev": "yarn workspace @doit/server build:dev",
     "db:migrate": "yarn workspace @doit/server db:migrate",
     "db:migrate:dev": "yarn workspace @doit/server db:migrate:dev",
-    "lint": "yarn eslint --ignore-path .gitignore **/*.{ts,js}",
-    "lint:electron": "yarn eslint --ignore-path .gitignore packages/electron_app/**/*.{ts,js}"
+    "lint": "yarn eslint packages/**/*.{ts,js}",
+    "lint:electron": "yarn eslint packages/electron_app/**/*.{ts,js}"
   },
   "devDependencies": {
     "@types/luxon": "^3.1.0",
