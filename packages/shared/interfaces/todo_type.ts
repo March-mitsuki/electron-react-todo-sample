@@ -8,13 +8,7 @@ export type DateObj = {
 };
 
 export type Priority = 1 | 2 | 3 | 4 | 5;
-const priorityStr = {
-  1: "S",
-  2: "A",
-  3: "B",
-  4: "C",
-  5: "D",
-};
+export type PriorityStr = "S" | "A" | "B" | "C" | "D";
 
 export class Todo {
   id: string;
@@ -67,24 +61,58 @@ export class Todo {
   }
 
   /**
-   *
+   * convert priority to string
    * @param p Priority
    * @returns stringify priority OR empty string(when p out of range)
    */
-  sPriority(): string {
+  sPriority(): PriorityStr {
     switch (this.priority) {
       case 1:
-        return priorityStr[1];
+        return "S";
       case 2:
-        return priorityStr[2];
+        return "A";
       case 3:
-        return priorityStr[3];
+        return "B";
       case 4:
-        return priorityStr[4];
+        return "C";
       case 5:
-        return priorityStr[5];
+        return "D";
       default:
-        return "";
+        return "S";
     }
   }
 }
+
+export const toPriority = (s: PriorityStr): Priority => {
+  switch (s) {
+    case "S":
+      return 1;
+    case "A":
+      return 2;
+    case "B":
+      return 3;
+    case "C":
+      return 4;
+    case "D":
+      return 5;
+    default:
+      return 1;
+  }
+};
+
+export const toPriorityStr = (p: Priority): PriorityStr => {
+  switch (p) {
+    case 1:
+      return "S";
+    case 2:
+      return "A";
+    case 3:
+      return "B";
+    case 4:
+      return "C";
+    case 5:
+      return "D";
+    default:
+      return "S";
+  }
+};

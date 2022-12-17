@@ -48,7 +48,6 @@ export type AppAction =
   | AppActionType<"changePageType", PageType>
   | AppActionType<"changeTodoForm", TodoFormTypes>
   | AppActionType<"setTodoMenu", TodoMeneType>
-  | AppActionType<"setAuth", Auth>
   | AppActionType<"init", AppState>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;

@@ -57,9 +57,6 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   } else if (type === "setTodoMenu") {
     return { ...state, todoMenu: payload };
     //
-  } else if (type === "setAuth") {
-    return { ...state, auth: payload };
-    //
   } else if (type === "init") {
     return payload;
   } else {

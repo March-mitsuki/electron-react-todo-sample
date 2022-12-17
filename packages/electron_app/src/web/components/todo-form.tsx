@@ -9,23 +9,25 @@ import { EditTodoData } from "../store/types";
 import { todoConverter } from "../utils/firestore/converter";
 import { dateToObj } from "@doit/shared/utils/date";
 import { ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
+import { Priority, toPriority, toPriorityStr } from "@doit/shared/interfaces/todo_type";
 
 type TodoInputData = {
   todo: string;
   date: string;
+  priority: Priority;
 };
 
 const TodoForm: React.FC = () => {
   const { state, dispatch } = useAppCtx();
   const [submitBtnHover, setSubmitBtnHover] = useState(false);
   const [cancelBtnHover, setCancelBtnHover] = useState(false);
+  const [changePriority, setChangePriority] = useState(false);
   const [todoIptData, setTodoIptData] = useState<TodoInputData>(() => {
     if (state.changeTodoForm.formType === "edit") {
       const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
       const currentTodo = state.todo[idx];
       const _year = currentTodo.finish_date_obj.year.toString();
       const year = _year[_year.length - 2] + _year[_year.length - 1];
-      logger.info("edit-form", "date obj:", currentTodo.finish_date_obj);
 
       const _month = currentTodo.finish_date_obj.month;
       let month: string;
@@ -45,11 +47,13 @@ const TodoForm: React.FC = () => {
       return {
         todo: currentTodo.content,
         date: `${year}${month}${day}`,
+        priority: currentTodo.priority,
       };
     } else {
       return {
         todo: "",
         date: "",
+        priority: 1,
       };
     }
   });
@@ -60,6 +64,10 @@ const TodoForm: React.FC = () => {
       return;
     }
     const date = todoIptData.date;
+    if (date.length !== 6) {
+      alert("请按照yyLLdd的格式输入日期");
+      return;
+    }
     const year = Number(date.slice(0, 2));
     const month = Number(date.slice(2, 4));
     const day = Number(date.slice(4, 6));
@@ -100,6 +108,7 @@ const TodoForm: React.FC = () => {
       create_date: DateTime.now(),
       finish_date: finish_date,
       content: todoIptData.todo,
+      priority: todoIptData.priority,
     });
 
     if (state.changeTodoForm.formType === "add") {
@@ -122,6 +131,7 @@ const TodoForm: React.FC = () => {
       setTodoIptData({
         todo: "",
         date: "",
+        priority: 1,
       });
     } else if (state.changeTodoForm.formType === "edit") {
       const editData: EditTodoData = {
@@ -184,7 +194,7 @@ const TodoForm: React.FC = () => {
         />
         <span className=" absolute right-4 text-NRyellow/30">任务名称</span>
       </label>
-      <label className=" relative flex flex-col electron-no-drag">
+      <label className=" relative flex flex-col electron-no-drag mb-1">
         <div className="absolute left-[10px] top-[7px] h-[10px] w-[10px] bg-NRyellow rotate-45"></div>
         <input
           type="text"
@@ -202,6 +212,79 @@ const TodoForm: React.FC = () => {
           }
         />
         <span className=" absolute right-4 text-NRyellow/30">完成日期</span>
+      </label>
+      <label className=" relative flex flex-col electron-no-drag">
+        <div className="absolute left-[10px] top-[7px] h-[10px] w-[10px] bg-NRyellow rotate-45"></div>
+        {changePriority && (
+          <div className=" flex px-2 gap-2 bg-NRblack text-NRyellow pl-7 ">
+            <div
+              onClick={() => {
+                setTodoIptData((pre) => {
+                  return { ...pre, priority: toPriority("S") };
+                });
+                setChangePriority(false);
+              }}
+              className=" cursor-pointer "
+            >
+              S
+            </div>
+            <div
+              onClick={() => {
+                setTodoIptData((pre) => {
+                  return { ...pre, priority: toPriority("A") };
+                });
+                setChangePriority(false);
+              }}
+              className=" cursor-pointer "
+            >
+              A
+            </div>
+            <div
+              onClick={() => {
+                setTodoIptData((pre) => {
+                  return { ...pre, priority: toPriority("B") };
+                });
+                setChangePriority(false);
+              }}
+              className=" cursor-pointer "
+            >
+              B
+            </div>
+            <div
+              onClick={() => {
+                setTodoIptData((pre) => {
+                  return { ...pre, priority: toPriority("C") };
+                });
+                setChangePriority(false);
+              }}
+              className=" cursor-pointer "
+            >
+              C
+            </div>
+            <div
+              onClick={() => {
+                setTodoIptData((pre) => {
+                  return { ...pre, priority: toPriority("D") };
+                });
+                setChangePriority(false);
+              }}
+              className=" cursor-pointer "
+            >
+              D
+            </div>
+          </div>
+        )}
+        {!changePriority && (
+          <div
+            onClick={() => {
+              setChangePriority(true);
+            }}
+            className="px-2 bg-NRblack text-NRyellow pl-7 cursor-pointer "
+          >
+            {toPriorityStr(todoIptData.priority)}
+          </div>
+        )}
+        <span className=" absolute right-4 text-NRyellow/30">优先级</span>
       </label>
       <div className=" w-screen h-[2px] bg-NRblack my-1"></div>
       <div className=" relative w-screen flex flex-col gap-2 mb-5">
