@@ -1,22 +1,46 @@
-import { ToDoit } from "@doit/shared";
+import { Doya } from "@doit/shared";
 import { FieldValue, Timestamp } from "firebase/firestore";
 
-// id is doc.id, not in doc.data
-export type FirestoreTodoType = {
-  user_id: string;
-  locale: string;
-  timezome: string;
-  create_date: string; // ISO 8601 string, client create date
-  finish_date: string; // ISO 8601 string, client create date
-  finish_date_obj: ToDoit.DateObj;
-  priority: ToDoit.Priority;
-  content: string;
-  is_finish: boolean;
-  created_at: Timestamp; // serverTimestamp
-  updated_at: Timestamp; // serverTimestamp
-};
-
-export type ClientFirestoreTodo = Omit<FirestoreTodoType, "id" | "created_at" | "updated_at"> & {
+/**
+ * For clinet use `serverTimestamp()`
+ */
+export type ClientMetaData = {
   created_at: FieldValue | Date;
   updated_at: FieldValue | Date;
 };
+/**
+ * Server return value will be a real Timestamp
+ */
+export type ServerMetaData = {
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+/**
+ * Soft delete data will be add `deleted_at` & `expire_at`
+ */
+export type SoftDeletedMetaData = {
+  deleted_at: Timestamp;
+  expire_at: Timestamp;
+};
+/**
+ * Omit unnecessary property
+ * and change `created_date` & `finish_date` type to string. (ISOstring)
+ */
+export type OmitTodoForConvert = Omit<
+  Doya.Todo,
+  "id" | "create_date" | "finish_date" | "sPriority"
+> & { create_date: string; finish_date: string };
+
+export type FirestoreTodoType = OmitTodoForConvert & ServerMetaData;
+export type ClientFirestoreTodo = OmitTodoForConvert & ClientMetaData;
+export type DeletedFirestoreTodoType = FirestoreTodoType & SoftDeletedMetaData;
+
+export type OmitRoutineForConvert = Omit<Doya.Routine, "id" | "sTime">;
+
+export type FirestoreRoutineType = OmitRoutineForConvert & ServerMetaData;
+
+export type ClientFirestoreRoutine = Omit<
+  FirestoreRoutineType,
+  "id" | "created_at" | "updated_at"
+> &
+  ClientMetaData;

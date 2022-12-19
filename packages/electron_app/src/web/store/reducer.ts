@@ -1,4 +1,9 @@
 import { DateTime } from "luxon";
+import { collection, doc } from "firebase/firestore";
+import {
+  parseCronExpression,
+  TimerBasedCronScheduler as scheduler,
+} from "cron-schedule";
 
 // local dependencies
 import { browserlogger as logger } from "white-logger/esm/browser";
@@ -6,25 +11,24 @@ import { initFirebase } from "../utils/initFirebase";
 
 // type
 import { AppAction, AppReducer, AppState, PageType } from "./types";
-import { ToDoit } from "@doit/shared";
+import { Doya } from "@doit/shared";
 import { dateToObj } from "@doit/shared/utils/date";
-import { collection, doc } from "firebase/firestore";
-import { todoConverter } from "../utils/firestore/converter";
+import { routineConverter, todoConverter } from "../utils/firestore/converter";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
   if (type === "addTodo") {
-    state.todo.push(payload);
-    return { ...state, todo: state.todo };
+    state.todos.push(payload);
+    return { ...state, todos: state.todos };
     //
   } else if (type === "deleteTodo") {
-    const idx = state.todo.findIndex((x) => x.id === payload);
-    state.todo.splice(idx, 1);
-    return { ...state, todo: state.todo };
+    const idx = state.todos.findIndex((x) => x.id === payload);
+    state.todos.splice(idx, 1);
+    return { ...state, todos: state.todos };
     //
   } else if (type === "editTodo") {
-    const changeTodoIdx = state.todo.findIndex((x) => x.id === payload.id);
-    const dc = state.todo.map((x) => x);
+    const changeTodoIdx = state.todos.findIndex((x) => x.id === payload.id);
+    const dc = state.todos.map((x) => x);
     if (changeTodoIdx < 0) {
       logger.err(
         "edit-task",
@@ -42,15 +46,15 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
       timezone: "Asia/Tokyo",
       locale: "zh",
     });
-    return { ...state, todo: dc };
+    return { ...state, todos: dc };
     //
-  } else if (type === "setTodo") {
-    return { ...state, todo: payload };
+  } else if (type === "setTodos") {
+    return { ...state, todos: payload };
     //
   } else if (type === "toggleFinish") {
-    const idx = state.todo.findIndex((x) => x.id === payload.id);
-    state.todo[idx].is_finish = !payload.nowFinish;
-    return { ...state, todo: state.todo };
+    const idx = state.todos.findIndex((x) => x.id === payload.id);
+    state.todos[idx].is_finish = !payload.nowFinish;
+    return { ...state, todos: state.todos };
     //
   } else if (type === "changePageType") {
     return { ...state, pageType: payload };
@@ -61,6 +65,26 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   } else if (type === "setTodoMenu") {
     return { ...state, todoMenu: payload };
     //
+  } else if (type === "setRoutines") {
+    logger.info("reducer", "setRoutines called", payload);
+
+    payload.forEach((elem) => {
+      const cron = parseCronExpression(elem.cron_str);
+      scheduler.setInterval(cron, () => {
+        new Notification("YouDoya", { body: elem.content });
+      });
+    });
+    return { ...state, routines: payload };
+    //
+  } else if (type === "addRoutine") {
+    logger.info("reducer", "setRoutines called", payload);
+
+    const cron = parseCronExpression(payload.cron_str);
+    scheduler.setInterval(cron, () => {
+      new Notification("YouDoya", { body: payload.content });
+    });
+    state.routines.push(payload);
+    return { ...state, routines: state.routines };
   } else if (type === "init") {
     return payload;
   } else {
@@ -69,8 +93,8 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
 };
 
 export const initialState: AppState = {
-  todo: [
-    new ToDoit.Todo({
+  todos: [
+    new Doya.Todo({
       id: "",
       user_id: "",
       content: "正在连接服务器...",
@@ -78,27 +102,51 @@ export const initialState: AppState = {
       finish_date: DateTime.now(),
     }),
   ],
+  routines: [
+    new Doya.Routine({
+      id: "",
+      user_id: "",
+      content: "正在连接服务器...",
+      cron_str: "",
+      time_num: -1,
+      time_unit: Doya.timeUnitMin,
+    }),
+  ],
   isInit: false,
   todoMenu: { id: "", x: 0, y: 0 },
   pageType: PageType.ongoing,
-  //   changeTodoForm: { formType: "close", id: null },
-  changeTodoForm: { formType: "add", id: null },
+  changeTodoForm: { formType: "close", id: null },
   auth: undefined,
   fdb: undefined,
   fdbTodoCollRef: undefined,
   fdbTodoDocRef: undefined,
+  fdbRoutineCollRef: undefined,
+  fdbRoutineDocRef: undefined,
 };
 
 export const initReducer = async (): Promise<AppState> => {
   const eleAPI = window.electronAPI;
   const mode = await eleAPI.invoke.getAppMode();
   const { auth, fdb } = await initFirebase(mode);
-  const collRef = collection(fdb, "private", "v1", "todos").withConverter(
+
+  const todoCollRef = collection(fdb, "private", "v1", "todos").withConverter(
     todoConverter,
   );
-  const docRef: AppState["fdbTodoDocRef"] = (todoId) => {
+  const todoDocRef: AppState["fdbTodoDocRef"] = (todoId) => {
     return doc(fdb, "private", "v1", "todos", todoId).withConverter(
       todoConverter,
+    );
+  };
+
+  const routineCollRef = collection(
+    fdb,
+    "private",
+    "v1",
+    "routines",
+  ).withConverter(routineConverter);
+  const routineDocRef: AppState["fdbRoutineDocRef"] = (routineId) => {
+    return doc(fdb, "private", "v1", "routines", routineId).withConverter(
+      routineConverter,
     );
   };
 
@@ -107,7 +155,9 @@ export const initReducer = async (): Promise<AppState> => {
     isInit: true,
     auth: auth,
     fdb: fdb,
-    fdbTodoCollRef: collRef,
-    fdbTodoDocRef: docRef,
+    fdbTodoCollRef: todoCollRef,
+    fdbTodoDocRef: todoDocRef,
+    fdbRoutineCollRef: routineCollRef,
+    fdbRoutineDocRef: routineDocRef,
   };
 };

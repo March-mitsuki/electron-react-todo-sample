@@ -1,12 +1,13 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FormEventHandler, useState } from "react";
 import { Link } from "react-router-dom";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 // local dependencies
 import { FirebaseErrObj } from "@doit/shared/interfaces";
 import { useAppCtx } from "../store/store";
-import { BackGroundCanvas, HeadBtn } from "../components";
-import { browserlogger as logger } from "white-logger/esm/browser";
+import { BackGroundCanvas } from "../components";
+import AppHeader from "../components/header";
 
 const Signin: React.FC = () => {
   const { state } = useAppCtx();
@@ -26,10 +27,16 @@ const Signin: React.FC = () => {
       .catch((err: FirebaseErrObj) => {
         logger.err("sign-in", err);
 
-        if (err.code === "auth/user-not-found" && err.name === "FirebaseError") {
+        if (
+          err.code === "auth/user-not-found" &&
+          err.name === "FirebaseError"
+        ) {
           alert("不存在此用户");
         }
-        if (err.code === "auth/wrong-password" && err.name === "FirebaseError") {
+        if (
+          err.code === "auth/wrong-password" &&
+          err.name === "FirebaseError"
+        ) {
           alert("密码不正确");
         }
       });
@@ -38,9 +45,7 @@ const Signin: React.FC = () => {
   return (
     <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
       <BackGroundCanvas></BackGroundCanvas>
-      <div className="h-6 bg-NRblack flex justify-center items-center">
-        <HeadBtn displayOnly={true}></HeadBtn>
-      </div>
+      <AppHeader></AppHeader>
       <form onSubmit={handleSubmit}>
         <label>
           <div>邮箱</div>
@@ -60,9 +65,9 @@ const Signin: React.FC = () => {
             className=" bg-gray-500 "
           />
         </label>
-        <button type="submit">Sign In</button>
+        <button type="submit">登录</button>
       </form>
-      <Link to="signup">{"加入YoRHa部队(注册)"}</Link>
+      <Link to="signup">{"还没有账号(注册一个)"}</Link>
     </div>
   );
 };

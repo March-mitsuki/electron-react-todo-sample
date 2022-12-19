@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { browserlogger as logger } from "white-logger/esm/browser";
 
 // local dependencies
 import { useAppCtx } from "../store/store";
@@ -8,11 +9,10 @@ import {
   MenuBar,
   FootBtn,
   TodoList,
-  HeadBtn,
   Loading,
   BackGroundCanvas,
 } from "../components";
-import { browserlogger as logger } from "white-logger/esm/browser";
+import AppHeader from "../components/header";
 
 const Home: React.FC = () => {
   const { state } = useAppCtx();
@@ -34,9 +34,7 @@ const Home: React.FC = () => {
       {state.isInit ? (
         <>
           {state.todoMenu.id !== "" && <CtxMenu></CtxMenu>}
-          <div className="h-6 bg-NRblack flex justify-center items-center">
-            <HeadBtn></HeadBtn>
-          </div>
+          <AppHeader></AppHeader>
           <div className="h-[calc(100vh-1.5rem)] overflow-auto">
             <MenuBar></MenuBar>
             <div className="select-none electron-no-drag px-5 pt-1">

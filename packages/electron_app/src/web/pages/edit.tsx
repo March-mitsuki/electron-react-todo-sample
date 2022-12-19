@@ -8,7 +8,7 @@ const Edit = () => {
   return (
     <>
       <div>EditPageHere - {todoId}</div>
-      <div>state - {JSON.stringify(state.todo)}</div>
+      <div>state - {JSON.stringify(state.todos)}</div>
       <Link to={"/"}>Back Home</Link>
     </>
   );

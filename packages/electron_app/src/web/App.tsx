@@ -4,10 +4,6 @@ import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
 import { getDocs, query, where } from "firebase/firestore";
-import {
-  parseCronExpression,
-  TimerBasedCronScheduler as scheduler,
-} from "cron-schedule";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -16,12 +12,15 @@ import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import { ToDoit } from "@doit/shared";
+import Routine from "./pages/routine";
+
+import { Doya } from "@doit/shared";
 
 const router = createHashRouter([
   {
     path: "/",
     element: <Home />,
+    // element: <Routine />,
   },
   {
     path: "edit/:todoId",
@@ -35,6 +34,10 @@ const router = createHashRouter([
     path: "signup",
     element: <Signup />,
   },
+  {
+    path: "routine",
+    element: <Routine />,
+  },
 ]);
 
 const App = () => {
@@ -42,10 +45,6 @@ const App = () => {
   const ctxProviderState = { state: appState, dispatch: appDispatch };
 
   useMemo(() => {
-    const cron = parseCronExpression("*/1 * * * *");
-    scheduler.setInterval(cron, () => {
-      logger.info("App", "corn excuted now. next will:", cron.getNextDate());
-    });
     initReducer()
       .then((result) => {
         appDispatch({ type: "init", payload: result });
@@ -66,21 +65,36 @@ const App = () => {
           logger.err("on user signin", "fdb is undefined");
           return;
         }
-        if (!appState.fdbTodoCollRef) {
+        if (!appState.fdbTodoCollRef || !appState.fdbRoutineCollRef) {
           logger.err("on user signin", "collection ref is undefiend");
           return;
         }
-        const q = query(
+        const todoQuery = query(
           appState.fdbTodoCollRef,
           where("user_id", "==", user.uid),
         );
-        getDocs(q)
+        getDocs(todoQuery)
           .then((snap) => {
-            const todos: ToDoit.Todo[] = [];
+            const todos: Doya.Todo[] = [];
             snap.docs.forEach((doc) => {
               todos.push(doc.data());
             });
-            appDispatch({ type: "setTodo", payload: todos });
+            appDispatch({ type: "setTodos", payload: todos });
+          })
+          .catch((err) => {
+            logger.err("on user signin", err);
+          });
+        const routineQuery = query(
+          appState.fdbRoutineCollRef,
+          where("user_id", "==", user.uid),
+        );
+        getDocs(routineQuery)
+          .then((snap) => {
+            const routines: Doya.Routine[] = [];
+            snap.docs.forEach((doc) => {
+              routines.push(doc.data());
+            });
+            appDispatch({ type: "setRoutines", payload: routines });
           })
           .catch((err) => {
             logger.err("on user signin", err);

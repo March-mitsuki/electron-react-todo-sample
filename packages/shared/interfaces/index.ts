@@ -3,3 +3,6 @@ export type FirebaseErrObj = {
   name: string;
   [key: string]: any; // eslint-disable-line
 };
+
+export * from "./todo_type";
+export * from "./routine_type";

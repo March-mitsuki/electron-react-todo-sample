@@ -32,10 +32,13 @@ const FootBtn: React.FC = () => {
         )}
         <button
           onClick={() =>
-            dispatch({ type: "changeTodoForm", payload: { formType: "add", id: null } })
+            dispatch({
+              type: "changeTodoForm",
+              payload: { formType: "add", id: null },
+            })
           }
         >
-          再坚持一会
+          创建新任务
         </button>
       </label>
       <label
@@ -58,7 +61,7 @@ const FootBtn: React.FC = () => {
             <div className=" absolute left-2 h-[32px] w-[2px] bg-NRblack"></div>
           </>
         )}
-        <button onClick={() => eleAPI.send.close()}>傻逼社会爬</button>
+        <button onClick={() => eleAPI.send.close()}>关闭悬浮窗</button>
       </label>
     </>
   );

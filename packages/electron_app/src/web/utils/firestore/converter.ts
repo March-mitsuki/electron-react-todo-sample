@@ -1,17 +1,27 @@
 import { DateTime } from "luxon";
 import { serverTimestamp } from "firebase/firestore";
 
-import { ToDoit } from "@doit/shared";
-import { FirestoreTodoType, ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
+import { Doya } from "@doit/shared";
+import {
+  FirestoreTodoType,
+  ClientFirestoreTodo,
+} from "@doit/shared/interfaces/firestore";
 
-import type { FirestoreDataConverter, QueryDocumentSnapshot } from "firebase/firestore";
+import type {
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import {
+  ClientFirestoreRoutine,
+  FirestoreRoutineType,
+} from "@doit/shared/interfaces/firestore/convert_types";
 
-export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
-  toFirestore: (todo: ToDoit.Todo): ClientFirestoreTodo => {
+export const todoConverter: FirestoreDataConverter<Doya.Todo> = {
+  toFirestore: (todo: Doya.Todo): ClientFirestoreTodo => {
     return {
       user_id: todo.user_id,
       locale: todo.locale,
-      timezome: todo.timezone,
+      timezone: todo.timezone,
       create_date: todo.create_date.toISO(),
       finish_date: todo.finish_date.toISO(),
       finish_date_obj: todo.finish_date_obj,
@@ -24,11 +34,11 @@ export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
   },
   fromFirestore: (snap: QueryDocumentSnapshot<FirestoreTodoType>, options) => {
     const data = snap.data(options);
-    const parsedTodo = new ToDoit.Todo({
+    const parsedTodo = new Doya.Todo({
       id: snap.id,
       user_id: data.user_id,
       locale: data.locale,
-      timezone: data.timezome,
+      timezone: data.timezone,
       create_date: DateTime.fromISO(data.create_date),
       finish_date: DateTime.fromISO(data.finish_date),
       priority: data.priority,
@@ -36,5 +46,30 @@ export const todoConverter: FirestoreDataConverter<ToDoit.Todo> = {
       is_finish: data.is_finish,
     });
     return parsedTodo;
+  },
+};
+
+export const routineConverter: FirestoreDataConverter<Doya.Routine> = {
+  toFirestore: (routine: Doya.Routine): ClientFirestoreRoutine => {
+    return {
+      user_id: routine.user_id,
+      cron_str: routine.cron_str,
+      content: routine.content,
+      time_unit: routine.time_unit,
+      time_num: routine.time_num,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp(),
+    };
+  },
+  fromFirestore(snap: QueryDocumentSnapshot<FirestoreRoutineType>, options) {
+    const data = snap.data(options);
+    return new Doya.Routine({
+      id: snap.id,
+      user_id: data.user_id,
+      cron_str: data.cron_str,
+      content: data.content,
+      time_unit: data.time_unit,
+      time_num: data.time_num,
+    });
   },
 };

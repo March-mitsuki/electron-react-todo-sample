@@ -3,13 +3,16 @@ import { useState } from "react";
 import { addDoc, updateDoc } from "firebase/firestore";
 import { browserlogger as logger } from "white-logger/esm/browser";
 
-import { ToDoit } from "@doit/shared";
+import { Doya } from "@doit/shared";
 import { useAppCtx } from "../store/store";
 import { EditTodoData } from "../store/types";
-import { todoConverter } from "../utils/firestore/converter";
 import { dateToObj } from "@doit/shared/utils/date";
 import { ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
-import { Priority, toPriority, toPriorityStr } from "@doit/shared/interfaces/todo_type";
+import {
+  Priority,
+  toPriority,
+  toPriorityStr,
+} from "@doit/shared/interfaces/todo_type";
 
 type TodoInputData = {
   todo: string;
@@ -24,8 +27,10 @@ const TodoForm: React.FC = () => {
   const [changePriority, setChangePriority] = useState(false);
   const [todoIptData, setTodoIptData] = useState<TodoInputData>(() => {
     if (state.changeTodoForm.formType === "edit") {
-      const idx = state.todo.findIndex((x) => x.id === state.changeTodoForm.id);
-      const currentTodo = state.todo[idx];
+      const idx = state.todos.findIndex(
+        (x) => x.id === state.changeTodoForm.id,
+      );
+      const currentTodo = state.todos[idx];
       const _year = currentTodo.finish_date_obj.year.toString();
       const year = _year[_year.length - 2] + _year[_year.length - 1];
 
@@ -58,7 +63,9 @@ const TodoForm: React.FC = () => {
     }
   });
 
-  const submitNewTodo = () => {
+  const submitNewTodo: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+
     if (todoIptData.date === "" || todoIptData.todo === "") {
       alert("不可添加空白任务");
       return;
@@ -82,7 +89,12 @@ const TodoForm: React.FC = () => {
     if (year % 100 !== 0 && year % 4 === 0 && month === 2 && day > 29) {
       alert("请检查是否有不合适的日期,e.g.2月30日");
       return;
-    } else if (year % 100 === 0 && year % 400 === 0 && month === 2 && day > 29) {
+    } else if (
+      year % 100 === 0 &&
+      year % 400 === 0 &&
+      month === 2 &&
+      day > 29
+    ) {
       alert("请检查是否有不合适的日期,e.g.2月30日");
       return;
     } else if (month === 2 && day > 28) {
@@ -102,7 +114,7 @@ const TodoForm: React.FC = () => {
       alert("你尚未登录");
       return;
     }
-    const newTodo = new ToDoit.Todo({
+    const newTodo = new Doya.Todo({
       id: "",
       user_id: state.auth.currentUser.uid,
       create_date: DateTime.now(),
@@ -120,14 +132,17 @@ const TodoForm: React.FC = () => {
         logger.err("todo-form", "add todo -> collectron ref is undefined");
         return;
       }
-      const collectionRef = state.fdbTodoCollRef.withConverter(todoConverter);
-      addDoc(collectionRef, newTodo)
+
+      addDoc(state.fdbTodoCollRef, newTodo)
         .then((data) => {
           logger.nomal("form - addTodo", "doc write successfully:", data.id);
           newTodo.id = data.id;
           dispatch({ type: "addTodo", payload: newTodo });
         })
-        .catch((err) => logger.err("reducer - addTodo", "firebase add doc err:", err));
+        .catch((err) =>
+          logger.err("reducer - addTodo", "firebase add doc err:", err),
+        );
+
       setTodoIptData({
         todo: "",
         date: "",
@@ -161,7 +176,10 @@ const TodoForm: React.FC = () => {
         .then(() => {
           logger.nomal("todo-from", "updated successfullt");
           dispatch({ type: "editTodo", payload: editData });
-          dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } });
+          dispatch({
+            type: "changeTodoForm",
+            payload: { formType: "close", id: null },
+          });
         })
         .catch((err) => {
           logger.err("todo - form", "edit todo err:", err);
@@ -216,7 +234,7 @@ const TodoForm: React.FC = () => {
       <label className=" relative flex flex-col electron-no-drag">
         <div className="absolute left-[10px] top-[7px] h-[10px] w-[10px] bg-NRyellow rotate-45"></div>
         {changePriority && (
-          <div className=" flex px-2 gap-2 bg-NRblack text-NRyellow pl-7 ">
+          <div className=" flex px-2 gap-2 bg-NRblack text-NRyellow pl-7 cursor-pointer select-none ">
             <div
               onClick={() => {
                 setTodoIptData((pre) => {
@@ -224,7 +242,7 @@ const TodoForm: React.FC = () => {
                 });
                 setChangePriority(false);
               }}
-              className=" cursor-pointer "
+              className=" hover:text-NRorange "
             >
               S
             </div>
@@ -235,7 +253,7 @@ const TodoForm: React.FC = () => {
                 });
                 setChangePriority(false);
               }}
-              className=" cursor-pointer "
+              className=" hover:text-NRorange "
             >
               A
             </div>
@@ -246,7 +264,7 @@ const TodoForm: React.FC = () => {
                 });
                 setChangePriority(false);
               }}
-              className=" cursor-pointer "
+              className=" hover:text-NRorange "
             >
               B
             </div>
@@ -257,7 +275,7 @@ const TodoForm: React.FC = () => {
                 });
                 setChangePriority(false);
               }}
-              className=" cursor-pointer "
+              className=" hover:text-NRorange "
             >
               C
             </div>
@@ -268,7 +286,7 @@ const TodoForm: React.FC = () => {
                 });
                 setChangePriority(false);
               }}
-              className=" cursor-pointer "
+              className=" hover:text-NRorange "
             >
               D
             </div>
@@ -279,7 +297,10 @@ const TodoForm: React.FC = () => {
             onClick={() => {
               setChangePriority(true);
             }}
-            className="px-2 bg-NRblack text-NRyellow pl-7 cursor-pointer "
+            className={
+              " px-2 bg-NRblack text-NRyellow pl-7 cursor-pointer select-none " +
+              " hover:text-NRorange "
+            }
           >
             {toPriorityStr(todoIptData.priority)}
           </div>
@@ -302,8 +323,20 @@ const TodoForm: React.FC = () => {
               stroke="currentColor"
               strokeMiterlimit={10}
             />
-            <circle cx="337.36" cy="22.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
-            <circle cx="337.36" cy="169.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+            <circle
+              cx="337.36"
+              cy="22.5"
+              r="22"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
+            <circle
+              cx="337.36"
+              cy="169.5"
+              r="22"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
           </svg>
           <button
             onClick={submitNewTodo}
@@ -315,8 +348,8 @@ const TodoForm: React.FC = () => {
               " hover:mr-0 hover:bg-NRblack hover:text-NRyellow "
             }
           >
-            {state.changeTodoForm.formType === "add" && "再努努力"}
-            {state.changeTodoForm.formType === "edit" && "修改任务"}
+            {state.changeTodoForm.formType === "add" && "新建任务"}
+            {state.changeTodoForm.formType === "edit" && "提交修改"}
           </button>
         </div>
         <div className={" flex items-center gap-1 " + " mb-2 ml-2 z-10 "}>
@@ -331,12 +364,27 @@ const TodoForm: React.FC = () => {
               stroke="currentColor"
               strokeMiterlimit={10}
             />
-            <circle cx="337.36" cy="22.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
-            <circle cx="337.36" cy="169.5" r="22" stroke="currentColor" strokeMiterlimit={10} />
+            <circle
+              cx="337.36"
+              cy="22.5"
+              r="22"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
+            <circle
+              cx="337.36"
+              cy="169.5"
+              r="22"
+              stroke="currentColor"
+              strokeMiterlimit={10}
+            />
           </svg>
           <button
             onClick={() =>
-              dispatch({ type: "changeTodoForm", payload: { formType: "close", id: null } })
+              dispatch({
+                type: "changeTodoForm",
+                payload: { formType: "close", id: null },
+              })
             }
             onMouseEnter={() => setCancelBtnHover(true)}
             onMouseLeave={() => setCancelBtnHover(false)}
@@ -346,8 +394,8 @@ const TodoForm: React.FC = () => {
               " hover:mr-0 hover:bg-NRblack hover:text-NRyellow"
             }
           >
-            {state.changeTodoForm.formType === "add" && "还是算了"}
-            {state.changeTodoForm.formType === "edit" && "就按原来的"}
+            {state.changeTodoForm.formType === "add" && "取消新建"}
+            {state.changeTodoForm.formType === "edit" && "放弃更改"}
           </button>
         </div>
       </div>

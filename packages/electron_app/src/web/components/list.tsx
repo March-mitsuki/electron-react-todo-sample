@@ -52,6 +52,12 @@ const TodoList: React.FC = () => {
           {todo.sPriority()}
         </div>
       );
+    } else if (todo.priority === 5) {
+      return (
+        <div className=" absolute left-[3.1px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
+          {todo.sPriority()}
+        </div>
+      );
     } else {
       return (
         <div className=" absolute left-[3.5px] flex items-center justify-center text-NRblack text-xs text-opacity-100 peer-checked:text-opacity-0 ">
@@ -61,11 +67,11 @@ const TodoList: React.FC = () => {
     }
   };
 
-  const listNode = (elem: Todo, idx: number) => {
+  const listNode = (elem: Todo) => {
     return (
       <label
-        key={idx}
-        htmlFor={`todo${idx}`}
+        key={elem.id}
+        htmlFor={`todo${elem.id}`}
         onContextMenu={(e) => handleListCtxMenu(e, elem)}
         className=" flex gap-1 items-center justify-between cursor-pointer "
       >
@@ -73,13 +79,15 @@ const TodoList: React.FC = () => {
           <>
             <div className="flex items-center gap-1">
               <div className="h-[11px] w-[11px] mx-[2px] bg-NRorange rotate-45"></div>
-              <div className="text-NRorange truncate w-[calc(100vw/3)]">{elem.content}</div>
+              <div className="text-NRorange truncate w-[calc(100vw/3)]">
+                {elem.content}
+              </div>
             </div>
           </>
         ) : (
           <div className="relative flex items-center gap-1">
             <input
-              id={`todo${idx}`}
+              id={`todo${elem.id}`}
               type="checkbox"
               checked={elem.is_finish}
               onChange={() => handleFinishToggle(elem)}
@@ -93,15 +101,23 @@ const TodoList: React.FC = () => {
               stroke="currentColor"
               className="w-[17px] h-[17px] -left-[1px] text-NRblack absolute text-opacity-0 peer-checked:text-opacity-100"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
             </svg>
             {priorityNode(elem)}
-            <div className="text-NRblack truncate w-[calc(100vw/3)] ">{elem.content}</div>
+            <div className="text-NRblack truncate w-[calc(100vw/3)] ">
+              {elem.content}
+            </div>
           </div>
         )}
         <div
           className={
-            state.todoMenu.id === elem.id ? " text-NRorange truncate" : " text-NRblack truncate"
+            state.todoMenu.id === elem.id
+              ? " text-NRorange truncate"
+              : " text-NRblack truncate"
           }
         >
           {elem.finish_date_obj.year > DateTime.now().year
@@ -114,21 +130,23 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      {state.todo.sort(sortBy("priority", "finish_date")).map((elem, idx) => {
+      {state.todos.sort(sortBy("priority", "finish_date")).map((elem) => {
         console.log("map render once");
         if (state.pageType === PageType.ongoing) {
           if (!elem.is_finish) {
-            return listNode(elem, idx);
+            return listNode(elem);
           }
         } else if (state.pageType === PageType.finish) {
           if (elem.is_finish) {
-            return listNode(elem, idx);
+            return listNode(elem);
           }
         } else {
-          return listNode(elem, idx);
+          return listNode(elem);
         }
       })}
-      {state.todo.length === 0 && <div className=" text-NRblack text-center ">尚未创建任务</div>}
+      {state.todos.length === 0 && (
+        <div className=" text-NRblack text-center ">尚未创建任务</div>
+      )}
     </>
   );
 };

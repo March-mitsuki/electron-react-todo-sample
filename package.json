@@ -25,8 +25,8 @@
     "build:server:dev": "yarn workspace @doit/server build:dev",
     "db:migrate": "yarn workspace @doit/server db:migrate",
     "db:migrate:dev": "yarn workspace @doit/server db:migrate:dev",
-    "lint": "yarn eslint packages/**/*.{ts,js}",
-    "lint:electron": "yarn eslint packages/electron_app/**/*.{ts,js}"
+    "lint": "yarn eslint packages/**/*.{ts,js,tsx}",
+    "lint:electron": "yarn eslint packages/electron_app/**/*.{ts,js,tsx}"
   },
   "devDependencies": {
     "@types/luxon": "^3.1.0",

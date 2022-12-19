@@ -1,1 +1,1 @@
-export * as ToDoit from "./interfaces/todo_type";
+export * as Doya from "./interfaces";

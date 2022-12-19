@@ -1,9 +1,12 @@
-import { ToDoit } from "@doit/shared";
+import { Doya } from "@doit/shared";
 import { Dispatch } from "react";
 
 import type { Auth } from "firebase/auth";
-import type { Firestore, CollectionReference, DocumentReference } from "firebase/firestore";
-import { Todo } from "@doit/shared/interfaces/todo_type";
+import type {
+  Firestore,
+  CollectionReference,
+  DocumentReference,
+} from "firebase/firestore";
 
 export enum PageType {
   ongoing = 1,
@@ -11,7 +14,7 @@ export enum PageType {
   all = 3,
 }
 
-type TodoId = ToDoit.Todo["id"];
+type TodoId = Doya.Todo["id"];
 
 export type TodoMeneType = { id: TodoId; x: number; y: number };
 
@@ -23,15 +26,20 @@ export type TodoFormTypes =
 export type EditTodoData = { id: TodoId; todo: string; date: string };
 
 export type AppState = {
-  todo: ToDoit.Todo[];
+  todos: Doya.Todo[];
+  routines: Doya.Routine[];
   isInit: boolean;
   todoMenu: TodoMeneType;
   pageType: PageType;
   changeTodoForm: TodoFormTypes;
   auth: Auth | undefined;
   fdb: Firestore | undefined;
-  fdbTodoCollRef: CollectionReference<Todo> | undefined;
-  fdbTodoDocRef: ((todoId: string) => DocumentReference<Todo>) | undefined;
+  fdbTodoCollRef: CollectionReference<Doya.Todo> | undefined;
+  fdbTodoDocRef: ((todoId: string) => DocumentReference<Doya.Todo>) | undefined;
+  fdbRoutineCollRef: CollectionReference<Doya.Routine> | undefined;
+  fdbRoutineDocRef:
+    | ((routineId: string) => DocumentReference<Doya.Routine>)
+    | undefined;
 };
 
 export type AppActionType<T, P> = {
@@ -40,14 +48,16 @@ export type AppActionType<T, P> = {
 };
 
 export type AppAction =
-  | AppActionType<"addTodo", ToDoit.Todo>
+  | AppActionType<"addTodo", Doya.Todo>
   | AppActionType<"deleteTodo", TodoId>
-  | AppActionType<"setTodo", ToDoit.Todo[]>
+  | AppActionType<"setTodos", Doya.Todo[]>
   | AppActionType<"editTodo", EditTodoData>
   | AppActionType<"toggleFinish", { id: TodoId; nowFinish: boolean }>
   | AppActionType<"changePageType", PageType>
   | AppActionType<"changeTodoForm", TodoFormTypes>
   | AppActionType<"setTodoMenu", TodoMeneType>
+  | AppActionType<"setRoutines", Doya.Routine[]>
+  | AppActionType<"addRoutine", Doya.Routine>
   | AppActionType<"init", AppState>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;
