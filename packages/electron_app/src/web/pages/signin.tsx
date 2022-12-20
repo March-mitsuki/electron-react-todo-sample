@@ -67,7 +67,7 @@ const Signin: React.FC = () => {
         </label>
         <button type="submit">登录</button>
       </form>
-      <Link to="signup">{"还没有账号(注册一个)"}</Link>
+      <Link to="/signup">{"还没有账号(注册一个)"}</Link>
     </div>
   );
 };

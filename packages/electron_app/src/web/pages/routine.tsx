@@ -24,6 +24,9 @@ const Routine: React.FC = () => {
           </div>
         );
       })}
+      {state.routines.length === 0 && (
+        <div className="px-4 py-2 text-NRblack text-center">尚不存在循环</div>
+      )}
       <RoutineFrom></RoutineFrom>
     </div>
   );

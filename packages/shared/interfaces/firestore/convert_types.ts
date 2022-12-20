@@ -22,6 +22,7 @@ export type SoftDeletedMetaData = {
   deleted_at: Timestamp;
   expire_at: Timestamp;
 };
+
 /**
  * Omit unnecessary property
  * and change `created_date` & `finish_date` type to string. (ISOstring)
@@ -30,17 +31,22 @@ export type OmitTodoForConvert = Omit<
   Doya.Todo,
   "id" | "create_date" | "finish_date" | "sPriority"
 > & { create_date: string; finish_date: string };
-
 export type FirestoreTodoType = OmitTodoForConvert & ServerMetaData;
 export type ClientFirestoreTodo = OmitTodoForConvert & ClientMetaData;
 export type DeletedFirestoreTodoType = FirestoreTodoType & SoftDeletedMetaData;
 
+/**
+ * Omit unnecessary property for firebase convert.
+ */
 export type OmitRoutineForConvert = Omit<Doya.Routine, "id" | "sTime">;
-
 export type FirestoreRoutineType = OmitRoutineForConvert & ServerMetaData;
-
 export type ClientFirestoreRoutine = Omit<
   FirestoreRoutineType,
   "id" | "created_at" | "updated_at"
 > &
   ClientMetaData;
+
+export type FirestoreUserType = {
+  locale: string;
+  timezone: string;
+};
