@@ -29,7 +29,7 @@ export type SoftDeletedMetaData = {
  */
 export type OmitTodoForConvert = Omit<
   Doya.Todo,
-  "id" | "create_date" | "finish_date" | "sPriority"
+  "id" | "create_date" | "finish_date" | "sPriority" | "parseDate"
 > & { create_date: string; finish_date: string };
 export type FirestoreTodoType = OmitTodoForConvert & ServerMetaData;
 export type ClientFirestoreTodo = OmitTodoForConvert & ClientMetaData;

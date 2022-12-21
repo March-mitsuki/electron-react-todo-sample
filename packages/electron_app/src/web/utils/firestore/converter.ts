@@ -14,17 +14,15 @@ import type {
 import {
   ClientFirestoreRoutine,
   FirestoreRoutineType,
+  FirestoreUserType,
 } from "@doit/shared/interfaces/firestore/convert_types";
 
 export const todoConverter: FirestoreDataConverter<Doya.Todo> = {
   toFirestore: (todo: Doya.Todo): ClientFirestoreTodo => {
     return {
       user_id: todo.user_id,
-      locale: todo.locale,
-      timezone: todo.timezone,
       create_date: todo.create_date.toISO(),
       finish_date: todo.finish_date.toISO(),
-      finish_date_obj: todo.finish_date_obj,
       priority: todo.priority,
       content: todo.content,
       is_finish: todo.is_finish,
@@ -37,8 +35,6 @@ export const todoConverter: FirestoreDataConverter<Doya.Todo> = {
     const parsedTodo = new Doya.Todo({
       id: snap.id,
       user_id: data.user_id,
-      locale: data.locale,
-      timezone: data.timezone,
       create_date: DateTime.fromISO(data.create_date),
       finish_date: DateTime.fromISO(data.finish_date),
       priority: data.priority,
@@ -71,5 +67,14 @@ export const routineConverter: FirestoreDataConverter<Doya.Routine> = {
       time_unit: data.time_unit,
       time_num: data.time_num,
     });
+  },
+};
+
+export const userConverter: FirestoreDataConverter<FirestoreUserType> = {
+  toFirestore: (userSetting: FirestoreUserType) => {
+    return userSetting;
+  },
+  fromFirestore: (snap: QueryDocumentSnapshot<FirestoreUserType>, options) => {
+    return snap.data(options);
   },
 };

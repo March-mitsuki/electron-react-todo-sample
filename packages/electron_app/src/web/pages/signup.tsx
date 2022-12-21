@@ -1,4 +1,5 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { DateTime } from "luxon";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
@@ -24,6 +25,20 @@ const Signup: React.FC = () => {
       .then(async (userCredential) => {
         try {
           await updateProfile(userCredential.user, { displayName: username });
+          if (!state.createFdbUserRecordFunc) {
+            logger.err("signup", "cloud function is undefined");
+            return;
+          }
+          const eleApi = window.electronAPI;
+          const osLocale = await eleApi.invoke.getOsLocale();
+          await state.createFdbUserRecordFunc({
+            timezone: DateTime.now().toFormat("z"),
+            locale: osLocale,
+          });
+          // 需要讨论是否需要暂停一会儿等待服务器保存结果
+          // 因为操作是当createUser成功时就会触发auth的变更
+          // 导致initReducer会立即启动去查看现在的user设定
+          // 但可能此时user的设定还没反应到服务器上
           logger.info("signup", "signup sucessfully");
         } catch (err) {
           logger.err(

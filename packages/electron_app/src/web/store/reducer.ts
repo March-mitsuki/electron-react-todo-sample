@@ -12,8 +12,12 @@ import { initFirebase } from "../utils/initFirebase";
 // type
 import { AppAction, AppReducer, AppState, PageType } from "./types";
 import { Doya } from "@doit/shared";
-import { dateToObj } from "@doit/shared/utils/date";
-import { routineConverter, todoConverter } from "../utils/firestore/converter";
+import {
+  routineConverter,
+  todoConverter,
+  userConverter,
+} from "../utils/firestore/converter";
+import { httpsCallable } from "firebase/functions";
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
@@ -41,11 +45,6 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     const newFinishDate = DateTime.fromFormat(payload.date, "yyLLdd");
     changeTodo.finish_date = newFinishDate;
     changeTodo.content = payload.todo;
-    changeTodo.finish_date_obj = dateToObj({
-      date: newFinishDate,
-      timezone: "Asia/Tokyo",
-      locale: "zh",
-    });
     return { ...state, todos: dc };
     //
   } else if (type === "setTodos") {
@@ -85,6 +84,8 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     });
     state.routines.push(payload);
     return { ...state, routines: state.routines };
+  } else if (type === "changeUserSetting") {
+    return { ...state, userSetting: payload };
   } else if (type === "init") {
     return payload;
   } else {
@@ -117,18 +118,27 @@ export const initialState: AppState = {
   pageType: PageType.ongoing,
   changeTodoForm: { formType: "close", id: null },
   auth: undefined,
+  func: undefined,
+  createFdbUserRecordFunc: undefined,
   fdb: undefined,
+  fdbUserDocRef: undefined,
   fdbTodoCollRef: undefined,
   fdbTodoDocRef: undefined,
   fdbRoutineCollRef: undefined,
   fdbRoutineDocRef: undefined,
+  userSetting: undefined, // will init when user sign in.
 };
 
 export const initReducer = async (): Promise<AppState> => {
   const eleAPI = window.electronAPI;
   const mode = await eleAPI.invoke.getAppMode();
-  const { auth, fdb } = await initFirebase(mode);
+  const { auth, fdb, func } = await initFirebase(mode);
 
+  const createFdbUserRecord = httpsCallable(func, "createFdbUserRecord");
+
+  const userDocRef: AppState["fdbUserDocRef"] = (uid) => {
+    return doc(fdb, "private", "v1", "users", uid).withConverter(userConverter);
+  };
   const todoCollRef = collection(fdb, "private", "v1", "todos").withConverter(
     todoConverter,
   );
@@ -154,7 +164,10 @@ export const initReducer = async (): Promise<AppState> => {
     ...initialState,
     isInit: true,
     auth: auth,
+    func: func,
+    createFdbUserRecordFunc: createFdbUserRecord,
     fdb: fdb,
+    fdbUserDocRef: userDocRef,
     fdbTodoCollRef: todoCollRef,
     fdbTodoDocRef: todoDocRef,
     fdbRoutineCollRef: routineCollRef,

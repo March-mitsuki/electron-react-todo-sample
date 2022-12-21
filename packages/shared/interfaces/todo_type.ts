@@ -10,14 +10,15 @@ export type DateObj = {
 export type Priority = 1 | 2 | 3 | 4 | 5;
 export type PriorityStr = "S" | "A" | "B" | "C" | "D";
 
+export const luxonDateFmt = "yyLLdd";
+
 export class Todo {
   id: string;
   user_id: string;
-  locale: string;
-  timezone: string;
+  // locale: string;
+  // timezone: string;
   create_date: luxon.DateTime;
   finish_date: luxon.DateTime;
-  finish_date_obj: DateObj;
   priority: Priority;
   content: string;
   is_finish: boolean;
@@ -25,8 +26,6 @@ export class Todo {
   constructor({
     id,
     user_id,
-    locale = "zh",
-    timezone = "Asia/Tokyo",
     create_date,
     finish_date,
     priority = 1,
@@ -35,8 +34,6 @@ export class Todo {
   }: {
     id: string;
     user_id: string;
-    locale?: string;
-    timezone?: string;
     create_date: luxon.DateTime;
     finish_date: luxon.DateTime;
     priority?: Priority;
@@ -45,16 +42,8 @@ export class Todo {
   }) {
     this.id = id;
     this.user_id = user_id;
-    this.locale = locale;
-    this.timezone = timezone;
     this.create_date = create_date;
     this.finish_date = finish_date;
-    this.finish_date_obj = {
-      year: finish_date.setZone(this.timezone).year,
-      month: finish_date.setZone(this.timezone).month,
-      day: finish_date.setZone(this.timezone).day,
-      weekday: finish_date.setLocale(this.locale).weekdayShort,
-    };
     this.priority = priority;
     this.content = content;
     this.is_finish = is_finish;
@@ -80,6 +69,21 @@ export class Todo {
       default:
         return "S";
     }
+  }
+
+  parseDate({
+    timezone,
+    locale,
+  }: {
+    timezone: string;
+    locale: string;
+  }): DateObj {
+    return {
+      year: this.finish_date.setZone(timezone).year,
+      month: this.finish_date.setZone(timezone).month,
+      day: this.finish_date.setZone(timezone).day,
+      weekday: this.finish_date.setLocale(locale).weekdayShort,
+    };
   }
 }
 

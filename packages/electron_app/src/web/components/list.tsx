@@ -68,6 +68,12 @@ const TodoList: React.FC = () => {
   };
 
   const listNode = (elem: Todo) => {
+    if (!state.userSetting) {
+      logger.err("todo-list", "state user setting is undefined.");
+      return;
+    }
+    const { locale, timezone } = state.userSetting;
+    const dateObj = elem.parseDate({ timezone: timezone, locale: locale });
     return (
       <label
         key={elem.id}
@@ -120,9 +126,9 @@ const TodoList: React.FC = () => {
               : " text-NRblack truncate"
           }
         >
-          {elem.finish_date_obj.year > DateTime.now().year
-            ? `${elem.finish_date_obj.year}-${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`
-            : `${elem.finish_date_obj.month}-${elem.finish_date_obj.day}(${elem.finish_date_obj.weekday})`}
+          {dateObj.year > DateTime.now().year
+            ? `${dateObj.year}-${dateObj.month}-${dateObj.day}(${dateObj.weekday})`
+            : `${dateObj.month}-${dateObj.day}(${dateObj.weekday})`}
         </div>
       </label>
     );

@@ -7,6 +7,8 @@ import type {
   CollectionReference,
   DocumentReference,
 } from "firebase/firestore";
+import type { Functions, HttpsCallable } from "firebase/functions";
+import { FirestoreUserType } from "@doit/shared/interfaces/firestore/convert_types";
 
 export enum PageType {
   ongoing = 1,
@@ -33,13 +35,21 @@ export type AppState = {
   pageType: PageType;
   changeTodoForm: TodoFormTypes;
   auth: Auth | undefined;
+  func: Functions | undefined;
+  createFdbUserRecordFunc:
+    | HttpsCallable<FirestoreUserType, unknown>
+    | undefined;
   fdb: Firestore | undefined;
+  fdbUserDocRef:
+    | ((uid: string) => DocumentReference<FirestoreUserType>)
+    | undefined;
   fdbTodoCollRef: CollectionReference<Doya.Todo> | undefined;
   fdbTodoDocRef: ((todoId: string) => DocumentReference<Doya.Todo>) | undefined;
   fdbRoutineCollRef: CollectionReference<Doya.Routine> | undefined;
   fdbRoutineDocRef:
     | ((routineId: string) => DocumentReference<Doya.Routine>)
     | undefined;
+  userSetting: FirestoreUserType | undefined;
 };
 
 export type AppActionType<T, P> = {
@@ -58,6 +68,7 @@ export type AppAction =
   | AppActionType<"setTodoMenu", TodoMeneType>
   | AppActionType<"setRoutines", Doya.Routine[]>
   | AppActionType<"addRoutine", Doya.Routine>
+  | AppActionType<"changeUserSetting", FirestoreUserType>
   | AppActionType<"init", AppState>;
 
 export type AppReducer<T, A> = (state: T, actioin: A) => AppState;

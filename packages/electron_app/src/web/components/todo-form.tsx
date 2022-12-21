@@ -6,7 +6,6 @@ import { browserlogger as logger } from "white-logger/esm/browser";
 import { Doya } from "@doit/shared";
 import { useAppCtx } from "../store/store";
 import { EditTodoData } from "../store/types";
-import { dateToObj } from "@doit/shared/utils/date";
 import { ClientFirestoreTodo } from "@doit/shared/interfaces/firestore";
 import {
   Priority,
@@ -30,11 +29,23 @@ const TodoForm: React.FC = () => {
       const idx = state.todos.findIndex(
         (x) => x.id === state.changeTodoForm.id,
       );
+      if (!state.userSetting) {
+        logger.err("todo-form", "user setting is undefined.");
+        return {
+          todo: "",
+          date: "",
+          priority: 1,
+        };
+      }
       const currentTodo = state.todos[idx];
-      const _year = currentTodo.finish_date_obj.year.toString();
+      const dateObj = currentTodo.parseDate({
+        locale: state.userSetting.locale,
+        timezone: state.userSetting.timezone,
+      });
+      const _year = dateObj.year.toString();
       const year = _year[_year.length - 2] + _year[_year.length - 1];
 
-      const _month = currentTodo.finish_date_obj.month;
+      const _month = dateObj.month;
       let month: string;
       if (_month > 0 && _month < 10) {
         month = "0" + _month.toString();
@@ -42,7 +53,7 @@ const TodoForm: React.FC = () => {
         month = _month.toString();
       }
 
-      const _day = currentTodo.finish_date_obj.day;
+      const _day = dateObj.day;
       let day: string;
       if (_day > 0 && _day < 10) {
         day = "0" + _day.toString();
@@ -101,7 +112,7 @@ const TodoForm: React.FC = () => {
       alert(`${year}年没有2月29日`);
       return;
     }
-    const finish_date = DateTime.fromFormat(date, "yyLLdd");
+    const finish_date = DateTime.fromFormat(date, Doya.luxonDateFmt);
     if (
       finish_date.year < DateTime.now().year &&
       finish_date.month < DateTime.now().month &&
@@ -162,11 +173,6 @@ const TodoForm: React.FC = () => {
       const updateData: Partial<ClientFirestoreTodo> = {
         content: editData.todo,
         finish_date: newFinishDate.toISO(),
-        finish_date_obj: dateToObj({
-          date: newFinishDate,
-          timezone: "Asia/Tokyo",
-          locale: "zh",
-        }),
       };
       if (!state.fdbTodoDocRef) {
         logger.err("todo-form", "fdb todo doc ref is undefined");

@@ -3,7 +3,7 @@ import "./index.css";
 import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
-import { getDocs, query, where } from "firebase/firestore";
+import { getDocs, getDoc, query, where } from "firebase/firestore";
 
 // local dependencies
 import { appReducer, initialState, initReducer } from "./store/reducer";
@@ -50,7 +50,7 @@ const App = () => {
         appDispatch({ type: "init", payload: result });
         logger.nomal("App", "init reducer successfully");
       })
-      .catch((err) => logger.err("App", err));
+      .catch((err) => logger.err("App", "init reducer err:", err));
   }, []);
 
   useEffect(() => {
@@ -65,10 +65,15 @@ const App = () => {
           logger.err("on user signin", "fdb is undefined");
           return;
         }
-        if (!appState.fdbTodoCollRef || !appState.fdbRoutineCollRef) {
-          logger.err("on user signin", "collection ref is undefiend");
+        if (
+          !appState.fdbTodoCollRef ||
+          !appState.fdbRoutineCollRef ||
+          !appState.fdbUserDocRef
+        ) {
+          logger.err("on user signin", "fdb ref is undefiend");
           return;
         }
+
         const todoQuery = query(
           appState.fdbTodoCollRef,
           where("user_id", "==", user.uid),
@@ -82,8 +87,9 @@ const App = () => {
             appDispatch({ type: "setTodos", payload: todos });
           })
           .catch((err) => {
-            logger.err("on user signin", err);
+            logger.err("on user signin", "get todos err:", err);
           });
+
         const routineQuery = query(
           appState.fdbRoutineCollRef,
           where("user_id", "==", user.uid),
@@ -97,7 +103,24 @@ const App = () => {
             appDispatch({ type: "setRoutines", payload: routines });
           })
           .catch((err) => {
-            logger.err("on user signin", err);
+            logger.err("on user signin", "get routines err:", err);
+          });
+
+        getDoc(appState.fdbUserDocRef(user.uid))
+          .then((snap) => {
+            const data = snap.data();
+            if (!data) {
+              logger.err(
+                "on user signin",
+                "get user setting:",
+                "snap.data() is undefined.",
+              );
+              return;
+            }
+            appDispatch({ type: "changeUserSetting", payload: data });
+          })
+          .catch((err) => {
+            logger.err("on user signin", "get user setting err:", err);
           });
         location.href = "#/";
       } else {

@@ -45,7 +45,7 @@ export const initElectronApp = async () => {
     await mainWindow.loadFile("dist/index.html");
     mainWindow.webContents.openDevTools();
 
-    ipcMain.handle("get:appMode", () => {
+    ipcMain.handle("getAppMode", () => {
       const mode = process.env.DOYA_MODE;
       if (!mode) {
         throw new Error(
@@ -54,7 +54,10 @@ export const initElectronApp = async () => {
       }
       return mode;
     });
-    ipcMain.on("close-window", () => {
+    ipcMain.handle("getOsLocale", () => {
+      return app.getLocale();
+    });
+    ipcMain.on("closeWindow", () => {
       mainWindow.close();
     });
 

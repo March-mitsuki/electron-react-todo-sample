@@ -10,10 +10,11 @@ const api: CustomeElectronAPI = {
     electronVersion: process.versions.electron,
   },
   send: {
-    close: () => ipcRenderer.send("close-window"),
+    closeWindow: () => ipcRenderer.send("closeWindow"),
   },
   invoke: {
-    getAppMode: () => ipcRenderer.invoke("get:appMode"),
+    getAppMode: () => ipcRenderer.invoke("getAppMode"),
+    getOsLocale: () => ipcRenderer.invoke("getOsLocale"),
   },
 };
 

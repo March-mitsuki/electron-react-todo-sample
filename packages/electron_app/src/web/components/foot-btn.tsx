@@ -61,7 +61,7 @@ const FootBtn: React.FC = () => {
             <div className=" absolute left-2 h-[32px] w-[2px] bg-NRblack"></div>
           </>
         )}
-        <button onClick={() => eleAPI.send.close()}>关闭悬浮窗</button>
+        <button onClick={() => eleAPI.send.closeWindow()}>关闭悬浮窗</button>
       </label>
     </>
   );

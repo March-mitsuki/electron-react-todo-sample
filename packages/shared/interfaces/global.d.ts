@@ -1,35 +1,34 @@
 // prettier-ignore
 export type ArgumentTypes<T extends (...args: any[]) => any> = T extends (...args: infer P) => any ? P : never; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-export type RendererInvokeType<E extends keyof R2MIpcInvokeEventMap> = (
-  ...args: ArgumentTypes<R2MIpcInvokeEventMap[E]>
-) => Promise<ReturnType<R2MIpcInvokeEventMap[E]>>;
+export type RendererInvokeType<E extends keyof IpcInvokeEventMap> = (
+  ...args: ArgumentTypes<IpcInvokeEventMap[E]>
+) => Promise<ReturnType<IpcInvokeEventMap[E]>>;
 
-export interface CustomeElectronAPI {
+export type CustomeElectronAPI = {
   const: {
     nodeVersion: string;
     chromeVersion: string;
     electronVersion: string;
   };
   send: {
-    close: R2MIpcMainEventMap["close-window"];
+    [key in keyof IpcMainEventMap]: IpcMainEventMap[keyof IpcMainEventMap];
   };
   invoke: {
-    getAppMode: RendererInvokeType<"get:appMode">;
+    [key in keyof IpcInvokeEventMap]: RendererInvokeType<
+      keyof IpcInvokeEventMap
+    >;
   };
-}
+};
 
-export interface R2MIpcInvokeEventMap {
-  "get:appMode": () => "production" | "development";
-}
+export type IpcInvokeEventMap = {
+  getAppMode: () => "production" | "development";
+  getOsLocale: () => string;
+};
 
-export interface R2MIpcMainEventMap {
-  "close-window": () => void;
-}
-
-export interface M2RIpcEventMap {
-  "display-tip": () => void;
-}
+export type IpcMainEventMap = {
+  closeWindow: () => void;
+};
 
 declare global {
   interface Window {
@@ -37,42 +36,42 @@ declare global {
   }
   namespace Electron {
     interface IpcRenderer {
-      invoke<E extends keyof R2MIpcInvokeEventMap>(
+      invoke<E extends keyof IpcInvokeEventMap>(
         channel: E,
-        ...args: ArgumentTypes<R2MIpcInvokeEventMap[E]>
-      ): Promise<ReturnType<R2MIpcInvokeEventMap[E]>>;
+        ...args: ArgumentTypes<IpcInvokeEventMap[E]>
+      ): Promise<ReturnType<IpcInvokeEventMap[E]>>;
 
-      send<E extends keyof R2MIpcMainEventMap>(
+      send<E extends keyof IpcMainEventMap>(
         channel: E,
-        ...args: ArgumentTypes<R2MIpcMainEventMap[E]>
+        ...args: ArgumentTypes<IpcMainEventMap[E]>
       ): void;
     }
 
     interface IpcMain {
-      handle<E extends keyof R2MIpcInvokeEventMap>(
+      handle<E extends keyof IpcInvokeEventMap>(
         channel: E,
         listener: (
           event: IpcMainInvokeEvent,
-          args: ArgumentTypes<R2MIpcInvokeEventMap[E]>,
-        ) => ReturnType<R2MIpcInvokeEventMap[E]>,
+          args: ArgumentTypes<IpcInvokeEventMap[E]>,
+        ) => ReturnType<IpcInvokeEventMap[E]>,
       ): void;
-      handleOnce<E extends keyof R2MIpcInvokeEventMap>(
+      handleOnce<E extends keyof IpcInvokeEventMap>(
         channel: E,
-        listener: R2MIpcInvokeEventMap[E],
+        listener: IpcInvokeEventMap[E],
       ): void;
 
-      on<E extends keyof R2MIpcMainEventMap>(
+      on<E extends keyof IpcMainEventMap>(
         channel: E,
         listener: (
           event: IpcMainEvent,
-          args: ArgumentTypes<R2MIpcMainEventMap[E]>,
+          args: ArgumentTypes<IpcMainEventMap[E]>,
         ) => void,
       ): this;
-      once<E extends keyof R2MIpcMainEventMap>(
+      once<E extends keyof IpcMainEventMap>(
         channel: E,
         listener: (
           event: IpcMainEvent,
-          args: ArgumentTypes<R2MIpcMainEventMap[E]>,
+          args: ArgumentTypes<IpcMainEventMap[E]>,
         ) => void,
       ): this;
     }
