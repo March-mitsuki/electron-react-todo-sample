@@ -16,7 +16,7 @@ const CtxMenu: React.FC = () => {
     logger.info("ctx-menu", "will delete:", state.todoMenu.id);
     deleteDoc(state.fdbTodoDocRef(state.todoMenu.id))
       .then(() => {
-        logger.nomal("ctx-menu", "delete todo successfully");
+        logger.normal("ctx-menu", "delete todo successfully");
         dispatch({ type: "deleteTodo", payload: state.todoMenu.id });
       })
       .catch((err) => {
@@ -28,7 +28,9 @@ const CtxMenu: React.FC = () => {
 
   return (
     <div
-      onClick={() => dispatch({ type: "setTodoMenu", payload: { id: "", x: 0, y: 0 } })}
+      onClick={() =>
+        dispatch({ type: "setTodoMenu", payload: { id: "", x: 0, y: 0 } })
+      }
       className=" absolute z-20 w-screen h-screen "
     >
       <div

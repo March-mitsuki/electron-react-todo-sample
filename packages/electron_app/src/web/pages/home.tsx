@@ -22,7 +22,7 @@ const Home: React.FC = () => {
       return;
     }
     if (!state.auth?.currentUser) {
-      logger.warn("home", "not signin");
+      logger.normal("home", "not signin");
       location.href = "#/signin";
       return;
     }

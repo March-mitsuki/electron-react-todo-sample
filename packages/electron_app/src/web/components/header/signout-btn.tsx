@@ -15,7 +15,7 @@ const SignOutBtn: React.FC = () => {
       return;
     }
     signOut(state.auth)
-      .then(() => logger.nomal("head-btn", "sign out successfully"))
+      .then(() => logger.normal("head-btn", "sign out successfully"))
       .catch((err) => logger.err("head-btn", "sign out err", err));
   };
   return (

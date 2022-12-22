@@ -146,7 +146,7 @@ const TodoForm: React.FC = () => {
 
       addDoc(state.fdbTodoCollRef, newTodo)
         .then((data) => {
-          logger.nomal("form - addTodo", "doc write successfully:", data.id);
+          logger.normal("form - addTodo", "doc write successfully:", data.id);
           newTodo.id = data.id;
           dispatch({ type: "addTodo", payload: newTodo });
         })
@@ -180,7 +180,7 @@ const TodoForm: React.FC = () => {
       }
       updateDoc(state.fdbTodoDocRef(editData.id), updateData)
         .then(() => {
-          logger.nomal("todo-from", "updated successfullt");
+          logger.normal("todo-from", "updated successfullt");
           dispatch({ type: "editTodo", payload: editData });
           dispatch({
             type: "changeTodoForm",

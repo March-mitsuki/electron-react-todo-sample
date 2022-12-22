@@ -48,7 +48,7 @@ const App = () => {
     initReducer()
       .then((result) => {
         appDispatch({ type: "init", payload: result });
-        logger.nomal("App", "init reducer successfully");
+        logger.normal("App", "init reducer successfully");
       })
       .catch((err) => logger.err("App", "init reducer err:", err));
   }, []);

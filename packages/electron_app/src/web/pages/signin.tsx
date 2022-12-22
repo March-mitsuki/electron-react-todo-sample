@@ -22,7 +22,7 @@ const Signin: React.FC = () => {
     }
     signInWithEmailAndPassword(state.auth, email, password)
       .then(() => {
-        logger.nomal("signin", "user signin successfully");
+        logger.normal("signin", "user signin successfully");
       })
       .catch((err: FirebaseErrObj) => {
         logger.err("sign-in", err);
