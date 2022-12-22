@@ -118,8 +118,9 @@ set_prisma_url() {
 
 set_server_firebase_secret_json() {
   echo "${INFO_HEAD} please input the firebase secret credential json file name (include file extention):"
-  vared -r '(example: my_secret.json) ' DOYA_FIREBASE_SECRET_JSON
-  echo "absolute path to your secret file will be: ($(pwd)/packages/server/${DOYA_FIREBASE_SECRET_JSON}), is OK? [y/n]: "
+  vared -rc '(example: my_secret.json) ' SECRET_JSON_NAME
+  DOYA_FIREBASE_SECRET_JSON = "$(pwd)/packages/server/${SECRET_JSON_NAME}"
+  echo "absolute path to your secret file will be: (${DOYA_FIREBASE_SECRET_JSON}), is OK? [y/n]: "
   while read "SERVER_FIREBASE_OK"; do
     case $SERVER_FIREBASE_OK in
     [Yy]) {
