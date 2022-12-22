@@ -24,8 +24,11 @@ const Routine: React.FC = () => {
           </div>
         );
       })}
-      {state.routines.length === 0 && (
+      {state.routines.length === 0 && state.userSetting && (
         <div className="px-4 py-2 text-NRblack text-center">尚不存在循环</div>
+      )}
+      {typeof state.userSetting === "undefined" && (
+        <div className="px-4 py-2 text-NRblack text-center">Loading...</div>
       )}
       <RoutineFrom></RoutineFrom>
     </div>

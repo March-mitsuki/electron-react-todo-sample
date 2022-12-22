@@ -50,3 +50,9 @@ export type FirestoreUserType = {
   locale: string;
   timezone: string;
 };
+
+export type CreateUserRecordParams = {
+  email: string;
+  displayName: string;
+  password: string;
+} & FirestoreUserType;

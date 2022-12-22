@@ -119,7 +119,7 @@ export const initialState: AppState = {
   changeTodoForm: { formType: "close", id: null },
   auth: undefined,
   func: undefined,
-  createFdbUserRecordFunc: undefined,
+  createUserRecordFunc: undefined,
   fdb: undefined,
   fdbUserDocRef: undefined,
   fdbTodoCollRef: undefined,
@@ -134,7 +134,7 @@ export const initReducer = async (): Promise<AppState> => {
   const mode = await eleAPI.invoke.getAppMode();
   const { auth, fdb, func } = await initFirebase(mode);
 
-  const createFdbUserRecord = httpsCallable(func, "createFdbUserRecord");
+  const createUserRecord = httpsCallable(func, "createUserRecord");
 
   const userDocRef: AppState["fdbUserDocRef"] = (uid) => {
     return doc(fdb, "private", "v1", "users", uid).withConverter(userConverter);
@@ -165,7 +165,7 @@ export const initReducer = async (): Promise<AppState> => {
     isInit: true,
     auth: auth,
     func: func,
-    createFdbUserRecordFunc: createFdbUserRecord,
+    createUserRecordFunc: createUserRecord,
     fdb: fdb,
     fdbUserDocRef: userDocRef,
     fdbTodoCollRef: todoCollRef,

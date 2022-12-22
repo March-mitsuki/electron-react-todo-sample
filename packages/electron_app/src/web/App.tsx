@@ -4,16 +4,18 @@ import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
 import { getDocs, getDoc, query, where } from "firebase/firestore";
+import { sendEmailVerification } from "firebase/auth";
 
 // local dependencies
-import { appReducer, initialState, initReducer } from "./store/reducer";
-import { appCtx } from "./store/store";
 import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
 import Routine from "./pages/routine";
+import Verification from "./pages/verification";
 
+import { appReducer, initialState, initReducer } from "./store/reducer";
+import { appCtx } from "./store/store";
 import { Doya } from "@doit/shared";
 
 const router = createHashRouter([
@@ -38,6 +40,10 @@ const router = createHashRouter([
     path: "routine",
     element: <Routine />,
   },
+  {
+    path: "verification",
+    element: <Verification />,
+  },
 ]);
 
 const App = () => {
@@ -61,6 +67,16 @@ const App = () => {
     appState.auth.onAuthStateChanged((user) => {
       if (user) {
         logger.info("App", "user sign in successfully");
+        if (user.emailVerified === false) {
+          sendEmailVerification(user, {
+            url: "",
+          }).catch((err) => {
+            logger.err("App", "send email verification err:", err);
+          });
+          location.href = "#/verification";
+          return;
+        }
+
         if (!appState.fdb) {
           logger.err("on user signin", "fdb is undefined");
           return;

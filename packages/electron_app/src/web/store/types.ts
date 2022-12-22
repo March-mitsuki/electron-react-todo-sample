@@ -8,7 +8,10 @@ import type {
   DocumentReference,
 } from "firebase/firestore";
 import type { Functions, HttpsCallable } from "firebase/functions";
-import { FirestoreUserType } from "@doit/shared/interfaces/firestore/convert_types";
+import {
+  FirestoreUserType,
+  CreateUserRecordParams,
+} from "@doit/shared/interfaces/firestore/convert_types";
 
 export enum PageType {
   ongoing = 1,
@@ -36,8 +39,8 @@ export type AppState = {
   changeTodoForm: TodoFormTypes;
   auth: Auth | undefined;
   func: Functions | undefined;
-  createFdbUserRecordFunc:
-    | HttpsCallable<FirestoreUserType, unknown>
+  createUserRecordFunc:
+    | HttpsCallable<CreateUserRecordParams, unknown>
     | undefined;
   fdb: Firestore | undefined;
   fdbUserDocRef:
