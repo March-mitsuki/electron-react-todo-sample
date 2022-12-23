@@ -3,14 +3,15 @@ import { BrowserWindow, app, ipcMain } from "electron";
 
 async function initDotenv(filename: string) {
   const dotenv = await import("dotenv");
+  const filePath = path.resolve(process.cwd(), filename);
   const dotenvResult = dotenv.config({
-    path: path.resolve(process.cwd(), filename),
+    path: filePath,
   });
   if (dotenvResult.error) {
     throw dotenvResult.error;
   } else {
     console.log("\x1b[32m" + "dotenv init successfully" + "\x1b[0m");
-    console.log("[dotenv]", `${filename} loaded:`, dotenvResult.parsed);
+    console.log("[dotenv]", `loaded from: ${filePath}:`, dotenvResult.parsed);
   }
 }
 

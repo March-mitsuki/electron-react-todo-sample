@@ -46,7 +46,7 @@ const Signin: React.FC = () => {
     <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
       <BackGroundCanvas></BackGroundCanvas>
       <AppHeader></AppHeader>
-      <form onSubmit={handleSubmit}>
+      <form className="electron-no-drag" onSubmit={handleSubmit}>
         <label>
           <div>邮箱</div>
           <input

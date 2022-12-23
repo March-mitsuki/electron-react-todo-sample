@@ -7,6 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev:webpack": "rm -rf ./dist && webpack --mode development --progress",
+    "dev:webpack:win": "powershell Remove-Item -Force -Recurse .\\dist && webpack --mode development --progress",
+    "dev:webpack:only": "webpack --mode development --progress",
     "dev:app": "electronmon ."
   },
   "electronmon": {

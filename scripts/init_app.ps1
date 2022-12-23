@@ -2,6 +2,7 @@
 ### this file should be run by yarn init-app-win in root workspace
 
 Set-PSDebug -Strict
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 
 [string]$SERVER_PATH = '.\packages\server\.env.local'
 [string]$WEB_PATH = '.\packages\solid_web\.env.local'

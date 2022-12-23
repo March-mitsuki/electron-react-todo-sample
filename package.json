@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=16"
   },
   "workspaces": [
     "packages/*"
@@ -14,15 +14,13 @@
   "scripts": {
     "prettier": "prettier --config ./.prettierrc.json --write ./packages/**/*.{ts,js}",
     "prettier:check": "prettier --config ./.prettierrc.json --check ./packages/**/*.{ts,js}",
-    "init-app": "./scripts/init_app.bash",
-    "init-app-z": "./scripts/init_app.zsh",
-    "init-app-win": "powershell .\\scripts\\init_app.ps1",
+    "init-app": "node ./scripts/init_app.mjs",
     "run:web": "yarn workspace @doit/solid_web",
     "run:electron": "yarn workspace @doit/electron_app",
     "run:shared": "yarn workspace @doit/shared",
     "run:server": "yarn workspace @doit/server",
     "run:prisma": "yarn workspace @doit/server env-cmd -f ./.env.local prisma",
-    "dev:electron:webpack": "yarn workspace @doit/electron_app dev:webpack",
+    "dev:electron:webpack": "node ./scripts/dev_electron_webpack.mjs",
     "dev:electron:app": "yarn workspace @doit/electron_app dev:app",
     "dev:server": "yarn workspace @doit/server dev",
     "build:server": "yarn workspace @doit/server build",
