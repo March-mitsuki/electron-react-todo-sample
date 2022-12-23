@@ -55,10 +55,15 @@ export type AppState = {
   userSetting: FirestoreUserType | undefined;
 };
 
-export type AppActionType<T, P> = {
-  type: T;
-  payload: P;
-};
+export type AppActionType<T, P> = P extends undefined
+  ? {
+      type: T;
+      payload?: P;
+    }
+  : {
+      type: T;
+      payload: P;
+    };
 
 export type AppAction =
   | AppActionType<"addTodo", Doya.Todo>
@@ -71,6 +76,7 @@ export type AppAction =
   | AppActionType<"setTodoMenu", TodoMeneType>
   | AppActionType<"setRoutines", Doya.Routine[]>
   | AppActionType<"addRoutine", Doya.Routine>
+  | AppActionType<"clearAllSchedule", undefined>
   | AppActionType<"changeUserSetting", FirestoreUserType>
   | AppActionType<"init", AppState>;
 

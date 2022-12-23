@@ -1,3 +1,5 @@
+import type { IpcRendererEvent } from "electron";
+
 // prettier-ignore
 export type ArgumentTypes<T extends (...args: any[]) => any> = T extends (...args: infer P) => any ? P : never; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -18,6 +20,11 @@ export type CustomeElectronAPI = {
     [key in keyof IpcInvokeEventMap]: RendererInvokeType<
       keyof IpcInvokeEventMap
     >;
+  };
+  on: {
+    emailVarification: (
+      listener: (event: IpcRendererEvent, ...data: unknown[]) => void,
+    ) => Electron.IpcRenderer;
   };
 };
 

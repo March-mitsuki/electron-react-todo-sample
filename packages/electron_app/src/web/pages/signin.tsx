@@ -14,6 +14,12 @@ const Signin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleCloseWindow: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    const eleApi = window.electronAPI;
+    eleApi.send.closeWindow();
+  };
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!state.auth) {
@@ -46,28 +52,31 @@ const Signin: React.FC = () => {
     <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
       <BackGroundCanvas></BackGroundCanvas>
       <AppHeader></AppHeader>
-      <form className="electron-no-drag" onSubmit={handleSubmit}>
-        <label>
-          <div>邮箱</div>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-            className=" bg-gray-500 "
-          />
-        </label>
-        <label>
-          <div>密码</div>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            className=" bg-gray-500 "
-          />
-        </label>
-        <button type="submit">登录</button>
-      </form>
-      <Link to="/signup">{"还没有账号(注册一个)"}</Link>
+      <div className="electron-no-drag">
+        <form onSubmit={handleSubmit}>
+          <label>
+            <div>邮箱</div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+              className=" bg-gray-500 "
+            />
+          </label>
+          <label>
+            <div>密码</div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              className=" bg-gray-500 "
+            />
+          </label>
+          <button type="submit">登录</button>
+        </form>
+        <Link to="/signup">{"还没有账号(注册一个)"}</Link>
+        <button onClick={handleCloseWindow}>退出程序</button>
+      </div>
     </div>
   );
 };

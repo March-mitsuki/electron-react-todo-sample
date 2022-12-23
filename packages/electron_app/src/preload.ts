@@ -16,6 +16,10 @@ const api: CustomeElectronAPI = {
     getAppMode: () => ipcRenderer.invoke("getAppMode"),
     getOsLocale: () => ipcRenderer.invoke("getOsLocale"),
   },
+  on: {
+    emailVarification: (listener) =>
+      ipcRenderer.on("emailVerification", listener),
+  },
 };
 
 contextBridge.exposeInMainWorld("electronAPI", api);

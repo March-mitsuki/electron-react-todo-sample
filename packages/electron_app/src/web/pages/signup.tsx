@@ -66,40 +66,42 @@ const Signup: React.FC = () => {
     <div className="font-semibold bg-NRyellow/80 w-screen h-screen">
       <BackGroundCanvas></BackGroundCanvas>
       <AppHeader></AppHeader>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <div>邮箱</div>
-          <input
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            type="email"
-          />
-        </label>
-        <label>
-          <div>用户名</div>
-          <input
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-            }}
-            type="text"
-          />
-        </label>
-        <label>
-          <div>密码</div>
-          <input
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            type="password"
-          />
-        </label>
-        <button type="submit">注册</button>
-      </form>
-      <Link to="/signin">{"已有账号(去登录)"}</Link>
+      <div className="electron-no-drag">
+        <form onSubmit={handleSubmit}>
+          <label>
+            <div>邮箱</div>
+            <input
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              type="email"
+            />
+          </label>
+          <label>
+            <div>用户名</div>
+            <input
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+              }}
+              type="text"
+            />
+          </label>
+          <label>
+            <div>密码</div>
+            <input
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              type="password"
+            />
+          </label>
+          <button type="submit">注册</button>
+        </form>
+        <Link to="/signin">{"已有账号(去登录)"}</Link>
+      </div>
     </div>
   );
 };

@@ -6,8 +6,8 @@
 import { spawn } from "child_process";
 import os from "os";
 
-const isWin = process.platform === "win32";
-const isMac = process.platform === "darwin";
+const isWin = process.platform === "win32"; // eslint-disable-line
+const isMac = process.platform === "darwin"; // eslint-disable-line
 
 if (isWin) {
   spawn("powershell", [".\\scripts\\init_app.ps1"], { stdio: "inherit" });

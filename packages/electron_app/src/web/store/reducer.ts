@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { collection, doc } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import {
   parseCronExpression,
   TimerBasedCronScheduler as scheduler,
@@ -8,16 +9,18 @@ import {
 // local dependencies
 import { browserlogger as logger } from "white-logger/esm/browser";
 import { initFirebase } from "../utils/initFirebase";
-
-// type
-import { AppAction, AppReducer, AppState, PageType } from "./types";
-import { Doya } from "@doit/shared";
 import {
   routineConverter,
   todoConverter,
   userConverter,
 } from "../utils/firestore/converter";
-import { httpsCallable } from "firebase/functions";
+
+// type
+import { AppAction, AppReducer, AppState, PageType } from "./types";
+import { Doya } from "@doit/shared";
+import type { ITimerHandle } from "cron-schedule";
+
+const allRoutineSchedule: ITimerHandle[] = [];
 
 export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
   const { type, payload } = action;
@@ -69,9 +72,10 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
 
     payload.forEach((elem) => {
       const cron = parseCronExpression(elem.cron_str);
-      scheduler.setInterval(cron, () => {
+      const newSchedule = scheduler.setInterval(cron, () => {
         new Notification("YouDoya", { body: elem.content });
       });
+      allRoutineSchedule.push(newSchedule);
     });
     return { ...state, routines: payload };
     //
@@ -79,11 +83,17 @@ export const appReducer: AppReducer<AppState, AppAction> = (state, action) => {
     logger.info("reducer", "setRoutines called", payload);
 
     const cron = parseCronExpression(payload.cron_str);
-    scheduler.setInterval(cron, () => {
+    const newSchedule = scheduler.setInterval(cron, () => {
       new Notification("YouDoya", { body: payload.content });
     });
+    allRoutineSchedule.push(newSchedule);
     state.routines.push(payload);
     return { ...state, routines: state.routines };
+  } else if (type === "clearAllSchedule") {
+    allRoutineSchedule.forEach((elem) => {
+      scheduler.clearTimeoutOrInterval(elem);
+    });
+    return state;
   } else if (type === "changeUserSetting") {
     return { ...state, userSetting: payload };
   } else if (type === "init") {

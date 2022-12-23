@@ -1,11 +1,12 @@
 import { browserlogger as logger } from "white-logger/esm/browser";
 import { signOut } from "firebase/auth";
 
-import { useAppCtx } from "../../store/store";
 import { useState } from "react";
 
+import { useAppCtx } from "../../store/store";
+
 const SignOutBtn: React.FC = () => {
-  const { state } = useAppCtx();
+  const { state, dispatch } = useAppCtx();
   const [isHover, setIsHover] = useState(false);
 
   const handleSignOut: React.MouseEventHandler<HTMLDivElement> = (e) => {
@@ -15,7 +16,10 @@ const SignOutBtn: React.FC = () => {
       return;
     }
     signOut(state.auth)
-      .then(() => logger.normal("head-btn", "sign out successfully"))
+      .then(() => {
+        logger.normal("head-btn", "sign out successfully");
+        dispatch({ type: "clearAllSchedule" });
+      })
       .catch((err) => logger.err("head-btn", "sign out err", err));
   };
   return (

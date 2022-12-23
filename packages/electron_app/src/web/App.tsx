@@ -3,7 +3,6 @@ import "./index.css";
 import { useEffect, useMemo, useReducer } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { browserlogger as logger } from "white-logger/esm/browser";
-import { getDocs, getDoc, query, where } from "firebase/firestore";
 import { sendEmailVerification } from "firebase/auth";
 
 // local dependencies
@@ -16,7 +15,7 @@ import Verification from "./pages/verification";
 
 import { appReducer, initialState, initReducer } from "./store/reducer";
 import { appCtx } from "./store/store";
-import { Doya } from "@doit/shared";
+import { initAppStore } from "./utils";
 
 const router = createHashRouter([
   {
@@ -64,12 +63,12 @@ const App = () => {
       logger.err("App", "appState.auth is undefinded");
       return;
     }
-    appState.auth.onAuthStateChanged((user) => {
+    appState.auth.onIdTokenChanged((user) => {
       if (user) {
         logger.info("App", "user sign in successfully");
         if (user.emailVerified === false) {
           sendEmailVerification(user, {
-            url: "",
+            url: "doyaptcl://open",
           }).catch((err) => {
             logger.err("App", "send email verification err:", err);
           });
@@ -77,67 +76,7 @@ const App = () => {
           return;
         }
 
-        if (!appState.fdb) {
-          logger.err("on user signin", "fdb is undefined");
-          return;
-        }
-        if (
-          !appState.fdbTodoCollRef ||
-          !appState.fdbRoutineCollRef ||
-          !appState.fdbUserDocRef
-        ) {
-          logger.err("on user signin", "fdb ref is undefiend");
-          return;
-        }
-
-        const todoQuery = query(
-          appState.fdbTodoCollRef,
-          where("user_id", "==", user.uid),
-        );
-        getDocs(todoQuery)
-          .then((snap) => {
-            const todos: Doya.Todo[] = [];
-            snap.docs.forEach((doc) => {
-              todos.push(doc.data());
-            });
-            appDispatch({ type: "setTodos", payload: todos });
-          })
-          .catch((err) => {
-            logger.err("on user signin", "get todos err:", err);
-          });
-
-        const routineQuery = query(
-          appState.fdbRoutineCollRef,
-          where("user_id", "==", user.uid),
-        );
-        getDocs(routineQuery)
-          .then((snap) => {
-            const routines: Doya.Routine[] = [];
-            snap.docs.forEach((doc) => {
-              routines.push(doc.data());
-            });
-            appDispatch({ type: "setRoutines", payload: routines });
-          })
-          .catch((err) => {
-            logger.err("on user signin", "get routines err:", err);
-          });
-
-        getDoc(appState.fdbUserDocRef(user.uid))
-          .then((snap) => {
-            const data = snap.data();
-            if (!data) {
-              logger.err(
-                "on user signin",
-                "get user setting:",
-                "snap.data() is undefined.",
-              );
-              return;
-            }
-            appDispatch({ type: "changeUserSetting", payload: data });
-          })
-          .catch((err) => {
-            logger.err("on user signin", "get user setting err:", err);
-          });
+        initAppStore(appState, appDispatch, user);
         location.href = "#/";
       } else {
         location.href = "#/signin";

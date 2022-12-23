@@ -6,7 +6,7 @@
 import { spawn } from "child_process";
 import fs from "fs";
 
-const isWin = process.platform === "win32";
+const isWin = process.platform === "win32"; // eslint-disable-line
 
 if (isWin) {
   const distPath = ".\\packages\\electron_app\\dist";

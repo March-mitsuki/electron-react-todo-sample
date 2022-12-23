@@ -35,7 +35,7 @@ const Home: React.FC = () => {
         <>
           {state.todoMenu.id !== "" && <CtxMenu></CtxMenu>}
           <AppHeader></AppHeader>
-          <div className="h-[calc(100vh-1.5rem)] overflow-auto">
+          <div className=" electron-no-drag h-[calc(100vh-1.5rem)] overflow-auto">
             <MenuBar></MenuBar>
             <div className="select-none electron-no-drag px-5 pt-1">
               <TodoList></TodoList>
